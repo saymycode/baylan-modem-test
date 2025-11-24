@@ -10,6 +10,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using BaylanModemTest.Models;
 
 namespace BaylanModemTest
 {
@@ -21,12 +22,13 @@ namespace BaylanModemTest
         private TcpClient _tcpPush;
         private TcpClient _tcpPull;
         private Task _tcpListenerTask;
-        private Task _comListenerTask;
         private CancellationTokenSource _listenerCts;
         private readonly object _serialLock = new object();
-        private string _serialReadData = string.Empty;
         private DateTime _modemDate = DateTime.MinValue;
 
+        private readonly StringBuilder _serialBuffer = new StringBuilder();
+        private StepExpectation _pendingExpectation;
+        private TaskCompletionSource<string> _pendingSerialResponse;
 
         private readonly ConcurrentQueue<string> _incomingMessages = new ConcurrentQueue<string>();
 
@@ -316,36 +318,65 @@ namespace BaylanModemTest
                 if (string.IsNullOrEmpty(incomingData))
                     return;
 
-                // sanitize (eski kodla birebir)
-                string sanitized = incomingData
-                    .Replace("\0", "")
-                    .Replace("\x1C", "<FS>")
-                    .Replace("\x1D", "<GS>")
-                    .Replace("\x1E", "<RS>")
-                    .Replace("\x1F", "<US>")
-                    .Replace("\x0A", "<LF>")
-                    .Replace("\x0D", "<CR>");
+                LogRx(SanitizeIncoming(incomingData));
 
-                string snapshot;
-                lock (_serialLock)
+                foreach (var message in CollectSerialMessages(incomingData))
                 {
-                    _serialReadData += sanitized;
-
-                    // Çok büyümesin diye son 64KB tut
-                    if (_serialReadData.Length > 64 * 1024)
-                        _serialReadData = _serialReadData.Substring(_serialReadData.Length - 64 * 1024);
-
-                    snapshot = _serialReadData;
+                    _incomingMessages.Enqueue(message);
+                    TryCompletePending(message);
                 }
-
-                // her gelişte biriken tüm buffer'ı kuyruğa bas
-                _incomingMessages.Enqueue(snapshot);
-                LogRx(sanitized);
             }
             catch (Exception ex)
             {
                 LogError($"COM DataReceived hatası: {ex.Message}");
             }
+        }
+
+        private string SanitizeIncoming(string incomingData)
+        {
+            return incomingData
+                .Replace("\0", "")
+                .Replace("\x1C", "<FS>")
+                .Replace("\x1D", "<GS>")
+                .Replace("\x1E", "<RS>")
+                .Replace("\x1F", "<US>")
+                .Replace("\x0A", "<LF>")
+                .Replace("\x0D", "<CR>");
+        }
+
+        private IEnumerable<string> CollectSerialMessages(string incomingData)
+        {
+            var messages = new List<string>();
+
+            lock (_serialLock)
+            {
+                _serialBuffer.Append(incomingData);
+
+                var text = _serialBuffer.ToString();
+                var parts = text.Split(new[] { "\r\n", "\n", "\r" }, StringSplitOptions.None);
+
+                // son parça tamamlanmamış mesaj olabilir
+                var trailing = parts[parts.Length - 1];
+
+                _serialBuffer.Clear();
+                if (!text.EndsWith("\n") && !text.EndsWith("\r"))
+                {
+                    _serialBuffer.Append(trailing);
+                }
+                else if (!string.IsNullOrWhiteSpace(trailing))
+                {
+                    messages.Add(trailing.Trim());
+                }
+
+                for (int i = 0; i < parts.Length - 1; i++)
+                {
+                    var message = parts[i].Trim();
+                    if (!string.IsNullOrEmpty(message))
+                        messages.Add(message);
+                }
+            }
+
+            return messages;
         }
 
         private async Task OpenConnectionsAsync(CancellationToken ct)
@@ -370,49 +401,21 @@ namespace BaylanModemTest
 
             _listenerCts = CancellationTokenSource.CreateLinkedTokenSource(ct);
 
-            // REMOVE: COM polling dinleyicisi artık yok
-            // _comListenerTask = Task.Run(() => ListenSerialAsync(_listenerCts.Token), ct);
-
             _tcpListenerTask = Task.Run(() => ListenTcpAsync(_listenerCts.Token), ct);
         }
-
-
 
         private async Task<string> SendAndReceiveAsync(string cmd, StepExpectation expectation, CancellationToken ct)
         {
             if (_serial == null || !_serial.IsOpen)
                 throw new InvalidOperationException("COM açık değil.");
 
-            _serial.Write(cmd);
-
             ClearIncomingMessages();
 
-            return await WaitForExpectedResponseAsync(expectation, ct);
-        }
+            PrepareForExpectedResponse(expectation);
 
-        private async Task ListenSerialAsync(CancellationToken token)
-        {
-            while (!token.IsCancellationRequested)
-            {
-                try
-                {
-                    if (_serial != null && _serial.IsOpen)
-                    {
-                        var chunk = _serial.ReadExisting();
-                        if (!string.IsNullOrEmpty(chunk))
-                        {
-                            _incomingMessages.Enqueue(chunk);
-                            LogRx(chunk);
-                        }
-                    }
-                }
-                catch (Exception ex)
-                {
-                    LogError($"COM dinleyicide hata: {ex.Message}");
-                }
+            _serial.Write(cmd);
 
-                await Task.Delay(50, token);
-            }
+            return await WaitForExpectedResponseAsync(ct);
         }
 
         private async Task ListenTcpAsync(CancellationToken token)
@@ -465,6 +468,7 @@ namespace BaylanModemTest
                             var text = Encoding.UTF8.GetString(buffer, 0, read);
                             _incomingMessages.Enqueue(text);
                             LogRx(text);
+                            TryCompletePending(text);
                         }
                     }
                 }
@@ -476,19 +480,19 @@ namespace BaylanModemTest
             }
         }
 
-        private async Task<string> WaitForExpectedResponseAsync(StepExpectation expectation, CancellationToken ct)
+        private async Task<string> WaitForExpectedResponseAsync(CancellationToken ct)
         {
+            if (_pendingSerialResponse == null)
+                throw new InvalidOperationException("Beklenen bir seri port cevabı yok.");
+
             var deadline = DateTime.UtcNow.AddMinutes(3);
 
             while (DateTime.UtcNow < deadline)
             {
                 ct.ThrowIfCancellationRequested();
 
-                if (_incomingMessages.TryDequeue(out var message))
-                {
-                    if (ValidateRx(message, expectation, out _))
-                        return message;
-                }
+                if (_pendingSerialResponse.Task.IsCompleted)
+                    return await _pendingSerialResponse.Task;
 
                 await Task.Delay(100, ct);
             }
@@ -496,15 +500,35 @@ namespace BaylanModemTest
             throw new TimeoutException("3 dakika içinde beklenen cevap alınamadı.");
         }
 
+        private void PrepareForExpectedResponse(StepExpectation expectation)
+        {
+            _pendingExpectation = expectation;
+            _pendingSerialResponse = new TaskCompletionSource<string>(TaskCreationOptions.RunContinuationsAsynchronously);
+        }
+
+        private void TryCompletePending(string message)
+        {
+            if (_pendingExpectation == null || _pendingSerialResponse == null)
+                return;
+
+            if (ValidateRx(message, _pendingExpectation, out _))
+            {
+                _pendingExpectation = null;
+                _pendingSerialResponse.TrySetResult(message);
+            }
+        }
+
         private void ClearIncomingMessages()
         {
             while (_incomingMessages.TryDequeue(out _)) { }
 
-            // ADD
             lock (_serialLock)
             {
-                _serialReadData = string.Empty;
+                _serialBuffer.Clear();
             }
+
+            _pendingExpectation = null;
+            _pendingSerialResponse = null;
         }
 
 
@@ -513,28 +537,27 @@ namespace BaylanModemTest
             _cts?.Cancel();
             _cts = null;
 
+            _pendingSerialResponse?.TrySetCanceled();
+
             try { _listenerCts?.Cancel(); } catch { }
             try { _tcpListener?.Stop(); } catch { }
             try { _tcpListenerTask?.Wait(500); } catch { }
-            try { _comListenerTask?.Wait(500); } catch { }
-
-            try { _serial?.Close(); } catch { }
             try { _tcpPush?.Close(); } catch { }
             try { _tcpPull?.Close(); } catch { }
 
+            var serial = _serial;
             _listenerCts = null;
             _tcpListener = null;
             _tcpListenerTask = null;
-            _comListenerTask = null;
             _serial = null; _tcpPush = null; _tcpPull = null;
+
             try
             {
-                if (_serial != null)
-                    _serial.DataReceived -= Serial_DataReceived; // ADD
+                serial.DataReceived -= Serial_DataReceived;
             }
             catch { }
 
-            try { _serial?.Close(); } catch { }
+            try { serial?.Close(); } catch { }
 
             LockSettings(false);
 
@@ -580,62 +603,6 @@ namespace BaylanModemTest
             rtbLog.SelectionColor = rtbLog.ForeColor;
 
                 rtbLog.ScrollToCaret();
-        }
-    }
-
-    internal class StepExpectation
-    {
-        public string ContainsText { get; }
-        public Dictionary<string, string> Fields { get; }
-
-        public StepExpectation(string containsText, Dictionary<string, string> fields = null)
-        {
-            ContainsText = containsText ?? string.Empty;
-            Fields = fields ?? new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-        }
-    }
-
-    internal class TestStep
-    {
-        public int Number { get; }
-        public string Name { get; }
-        private readonly Panel _led;
-        private readonly Label _status;
-
-        public TestStep(int number, string name, Panel led, Label statusLabel)
-        {
-            Number = number;
-            Name = name;
-            _led = led;
-            _status = statusLabel;
-        }
-
-        public void SetWaiting()
-        {
-            _led.BackColor = Color.Silver;
-            _status.Text = "Bekliyor";
-            _status.ForeColor = Color.Silver;
-        }
-
-        public void SetRunning()
-        {
-            _led.BackColor = Color.Orange;
-            _status.Text = "Çalışıyor";
-            _status.ForeColor = Color.Orange;
-        }
-
-        public void SetPass()
-        {
-            _led.BackColor = Color.LimeGreen;
-            _status.Text = "Geçti";
-            _status.ForeColor = Color.LimeGreen;
-        }
-
-        public void SetFail(string reason)
-        {
-            _led.BackColor = Color.Red;
-            _status.Text = reason;
-            _status.ForeColor = Color.Red;
         }
     }
 }

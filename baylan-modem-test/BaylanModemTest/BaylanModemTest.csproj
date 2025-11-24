@@ -52,6 +52,8 @@
     <Compile Include="FrmModemTest.Designer.cs">
       <DependentUpon>FrmModemTest.cs</DependentUpon>
     </Compile>
+    <Compile Include="Models\StepExpectation.cs" />
+    <Compile Include="Models\TestStep.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="FrmModemTest.resx">
