@@ -73,15 +73,13 @@ namespace BaylanModemTest
             this.lblStep7Name = new System.Windows.Forms.Label();
             this.lblStep7Status = new System.Windows.Forms.Label();
             this.pnlStep7Led = new System.Windows.Forms.Panel();
-            this.grpControls = new System.Windows.Forms.GroupBox();
-            this.controlsLayout = new System.Windows.Forms.TableLayoutPanel();
             this.btnStart = new System.Windows.Forms.Button();
             this.btnStop = new System.Windows.Forms.Button();
             this.overallProgress = new System.Windows.Forms.ProgressBar();
             this.lblCurrentStep = new System.Windows.Forms.Label();
-            this.bottomLayout = new System.Windows.Forms.TableLayoutPanel();
             this.grpLog = new System.Windows.Forms.GroupBox();
             this.rtbLog = new System.Windows.Forms.RichTextBox();
+            this.startStopLayout = new System.Windows.Forms.TableLayoutPanel();
             this.mainLayout.SuspendLayout();
             this.grpConnection.SuspendLayout();
             this.connectionLayout.SuspendLayout();
@@ -92,9 +90,6 @@ namespace BaylanModemTest
             this.middleLayout.SuspendLayout();
             this.grpSteps.SuspendLayout();
             this.stepsLayout.SuspendLayout();
-            this.grpControls.SuspendLayout();
-            this.controlsLayout.SuspendLayout();
-            this.bottomLayout.SuspendLayout();
             this.grpLog.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -105,14 +100,12 @@ namespace BaylanModemTest
             this.mainLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.mainLayout.Controls.Add(this.grpConnection, 0, 0);
             this.mainLayout.Controls.Add(this.middleLayout, 0, 1);
-            this.mainLayout.Controls.Add(this.bottomLayout, 0, 2);
             this.mainLayout.Dock = System.Windows.Forms.DockStyle.Fill;
             this.mainLayout.Location = new System.Drawing.Point(0, 0);
             this.mainLayout.Margin = new System.Windows.Forms.Padding(4);
             this.mainLayout.Name = "mainLayout";
-            this.mainLayout.RowCount = 3;
-            this.mainLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 225F));
-            this.mainLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 481F));
+            this.mainLayout.RowCount = 2;
+            this.mainLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 280F));
             this.mainLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.mainLayout.Size = new System.Drawing.Size(1200, 947);
             this.mainLayout.TabIndex = 0;
@@ -126,7 +119,7 @@ namespace BaylanModemTest
             this.grpConnection.Margin = new System.Windows.Forms.Padding(10, 10, 10, 5);
             this.grpConnection.Name = "grpConnection";
             this.grpConnection.Padding = new System.Windows.Forms.Padding(10);
-            this.grpConnection.Size = new System.Drawing.Size(1180, 210);
+            this.grpConnection.Size = new System.Drawing.Size(1180, 265);
             this.grpConnection.TabIndex = 0;
             this.grpConnection.TabStop = false;
             this.grpConnection.Text = "Bağlantı Ayarları";
@@ -144,7 +137,7 @@ namespace BaylanModemTest
             this.connectionLayout.Name = "connectionLayout";
             this.connectionLayout.RowCount = 1;
             this.connectionLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.connectionLayout.Size = new System.Drawing.Size(1160, 170);
+            this.connectionLayout.Size = new System.Drawing.Size(1160, 245);
             this.connectionLayout.TabIndex = 0;
             // 
             // comLayout
@@ -296,16 +289,20 @@ namespace BaylanModemTest
             this.tcpLayout.Controls.Add(this.numPushPort, 1, 1);
             this.tcpLayout.Controls.Add(this.lblPullPort, 0, 2);
             this.tcpLayout.Controls.Add(this.numPullPort, 1, 2);
+            this.tcpLayout.Controls.Add(this.startStopLayout, 1, 3);
+            this.tcpLayout.Controls.Add(this.overallProgress, 1, 4);
+            this.tcpLayout.Controls.Add(this.lblCurrentStep, 1, 5);
             this.tcpLayout.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tcpLayout.Location = new System.Drawing.Point(584, 4);
             this.tcpLayout.Margin = new System.Windows.Forms.Padding(4);
             this.tcpLayout.Name = "tcpLayout";
-            this.tcpLayout.RowCount = 5;
-            this.tcpLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
-            this.tcpLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
-            this.tcpLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
-            this.tcpLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
-            this.tcpLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.tcpLayout.RowCount = 6;
+            this.tcpLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 35F));
+            this.tcpLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 35F));
+            this.tcpLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 35F));
+            this.tcpLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 70F));
+            this.tcpLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 34F));
+            this.tcpLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 35F));
             this.tcpLayout.Size = new System.Drawing.Size(572, 162);
             this.tcpLayout.TabIndex = 1;
             // 
@@ -396,14 +393,78 @@ namespace BaylanModemTest
             0,
             0,
             0});
-            // 
+            //
+            // startStopLayout
+            //
+            this.startStopLayout.ColumnCount = 2;
+            this.startStopLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.startStopLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.startStopLayout.Controls.Add(this.btnStart, 0, 0);
+            this.startStopLayout.Controls.Add(this.btnStop, 1, 0);
+            this.startStopLayout.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.startStopLayout.Location = new System.Drawing.Point(178, 108);
+            this.startStopLayout.Name = "startStopLayout";
+            this.startStopLayout.RowCount = 1;
+            this.startStopLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.startStopLayout.Size = new System.Drawing.Size(391, 64);
+            this.startStopLayout.TabIndex = 10;
+            //
+            // btnStart
+            //
+            this.btnStart.BackColor = System.Drawing.Color.LightGreen;
+            this.btnStart.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.btnStart.Font = new System.Drawing.Font("Segoe UI", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
+            this.btnStart.Location = new System.Drawing.Point(3, 3);
+            this.btnStart.Name = "btnStart";
+            this.btnStart.Size = new System.Drawing.Size(189, 58);
+            this.btnStart.TabIndex = 0;
+            this.btnStart.Text = "TESTİ BAŞLAT";
+            this.btnStart.UseVisualStyleBackColor = false;
+            this.btnStart.Click += new System.EventHandler(this.btnStart_Click);
+            //
+            // btnStop
+            //
+            this.btnStop.BackColor = System.Drawing.Color.LightCoral;
+            this.btnStop.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.btnStop.Enabled = false;
+            this.btnStop.Font = new System.Drawing.Font("Segoe UI", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
+            this.btnStop.Location = new System.Drawing.Point(198, 3);
+            this.btnStop.Name = "btnStop";
+            this.btnStop.Size = new System.Drawing.Size(190, 58);
+            this.btnStop.TabIndex = 1;
+            this.btnStop.Text = "DURDUR";
+            this.btnStop.UseVisualStyleBackColor = false;
+            this.btnStop.Click += new System.EventHandler(this.btnStop_Click);
+            //
+            // overallProgress
+            //
+            this.overallProgress.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.overallProgress.Location = new System.Drawing.Point(178, 178);
+            this.overallProgress.Margin = new System.Windows.Forms.Padding(3, 6, 3, 3);
+            this.overallProgress.Name = "overallProgress";
+            this.overallProgress.Size = new System.Drawing.Size(391, 28);
+            this.overallProgress.TabIndex = 11;
+            //
+            // lblCurrentStep
+            //
+            this.lblCurrentStep.AutoSize = true;
+            this.lblCurrentStep.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.lblCurrentStep.Font = new System.Drawing.Font("Segoe UI", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
+            this.lblCurrentStep.Location = new System.Drawing.Point(178, 213);
+            this.lblCurrentStep.Margin = new System.Windows.Forms.Padding(3, 4, 3, 0);
+            this.lblCurrentStep.Name = "lblCurrentStep";
+            this.lblCurrentStep.Size = new System.Drawing.Size(391, 35);
+            this.lblCurrentStep.TabIndex = 12;
+            this.lblCurrentStep.Text = "Şu an: Bekliyor";
+            this.lblCurrentStep.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            //
             // middleLayout
-            // 
+            //
             this.middleLayout.ColumnCount = 2;
-            this.middleLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 65F));
-            this.middleLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 35F));
+            this.middleLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 60F));
+            this.middleLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 40F));
             this.middleLayout.Controls.Add(this.grpSteps, 0, 0);
-            this.middleLayout.Controls.Add(this.grpControls, 1, 0);
+            this.middleLayout.Controls.Add(this.grpLog, 1, 0);
             this.middleLayout.Dock = System.Windows.Forms.DockStyle.Fill;
             this.middleLayout.Location = new System.Drawing.Point(10, 235);
             this.middleLayout.Margin = new System.Windows.Forms.Padding(10, 10, 10, 5);
@@ -704,124 +765,27 @@ namespace BaylanModemTest
             this.pnlStep7Led.Name = "pnlStep7Led";
             this.pnlStep7Led.Size = new System.Drawing.Size(54, 48);
             this.pnlStep7Led.TabIndex = 18;
-            // 
-            // grpControls
-            // 
-            this.grpControls.Controls.Add(this.controlsLayout);
-            this.grpControls.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.grpControls.Font = new System.Drawing.Font("Segoe UI", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
-            this.grpControls.Location = new System.Drawing.Point(770, 3);
-            this.grpControls.Name = "grpControls";
-            this.grpControls.Padding = new System.Windows.Forms.Padding(10);
-            this.grpControls.Size = new System.Drawing.Size(407, 460);
-            this.grpControls.TabIndex = 1;
-            this.grpControls.TabStop = false;
-            this.grpControls.Text = "Kontroller";
-            // 
-            // controlsLayout
-            // 
-            this.controlsLayout.ColumnCount = 1;
-            this.controlsLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.controlsLayout.Controls.Add(this.btnStart, 0, 0);
-            this.controlsLayout.Controls.Add(this.btnStop, 0, 1);
-            this.controlsLayout.Controls.Add(this.overallProgress, 0, 2);
-            this.controlsLayout.Controls.Add(this.lblCurrentStep, 0, 3);
-            this.controlsLayout.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.controlsLayout.Location = new System.Drawing.Point(10, 30);
-            this.controlsLayout.Name = "controlsLayout";
-            this.controlsLayout.RowCount = 5;
-            this.controlsLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 60F));
-            this.controlsLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 60F));
-            this.controlsLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 40F));
-            this.controlsLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 40F));
-            this.controlsLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.controlsLayout.Size = new System.Drawing.Size(387, 420);
-            this.controlsLayout.TabIndex = 0;
-            // 
-            // btnStart
-            // 
-            this.btnStart.BackColor = System.Drawing.Color.LightGreen;
-            this.btnStart.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.btnStart.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
-            this.btnStart.Location = new System.Drawing.Point(3, 3);
-            this.btnStart.Name = "btnStart";
-            this.btnStart.Size = new System.Drawing.Size(381, 54);
-            this.btnStart.TabIndex = 0;
-            this.btnStart.Text = "TESTİ BAŞLAT";
-            this.btnStart.UseVisualStyleBackColor = false;
-            this.btnStart.Click += new System.EventHandler(this.btnStart_Click);
-            // 
-            // btnStop
-            // 
-            this.btnStop.BackColor = System.Drawing.Color.LightCoral;
-            this.btnStop.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.btnStop.Enabled = false;
-            this.btnStop.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
-            this.btnStop.Location = new System.Drawing.Point(3, 63);
-            this.btnStop.Name = "btnStop";
-            this.btnStop.Size = new System.Drawing.Size(381, 54);
-            this.btnStop.TabIndex = 1;
-            this.btnStop.Text = "DURDUR";
-            this.btnStop.UseVisualStyleBackColor = false;
-            this.btnStop.Click += new System.EventHandler(this.btnStop_Click);
-            // 
-            // overallProgress
-            // 
-            this.overallProgress.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.overallProgress.Location = new System.Drawing.Point(3, 123);
-            this.overallProgress.Name = "overallProgress";
-            this.overallProgress.Size = new System.Drawing.Size(381, 34);
-            this.overallProgress.TabIndex = 2;
-            // 
-            // lblCurrentStep
-            // 
-            this.lblCurrentStep.AutoSize = true;
-            this.lblCurrentStep.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.lblCurrentStep.Font = new System.Drawing.Font("Segoe UI", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
-            this.lblCurrentStep.Location = new System.Drawing.Point(3, 160);
-            this.lblCurrentStep.Margin = new System.Windows.Forms.Padding(3, 0, 3, 5);
-            this.lblCurrentStep.Name = "lblCurrentStep";
-            this.lblCurrentStep.Size = new System.Drawing.Size(381, 35);
-            this.lblCurrentStep.TabIndex = 3;
-            this.lblCurrentStep.Text = "Şu an: Bekliyor";
-            this.lblCurrentStep.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // bottomLayout
-            // 
-            this.bottomLayout.ColumnCount = 2;
-            this.bottomLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 99.23729F));
-            this.bottomLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 0.7627119F));
-            this.bottomLayout.Controls.Add(this.grpLog, 0, 0);
-            this.bottomLayout.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.bottomLayout.Location = new System.Drawing.Point(10, 711);
-            this.bottomLayout.Margin = new System.Windows.Forms.Padding(10, 5, 10, 10);
-            this.bottomLayout.Name = "bottomLayout";
-            this.bottomLayout.RowCount = 1;
-            this.bottomLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.bottomLayout.Size = new System.Drawing.Size(1180, 226);
-            this.bottomLayout.TabIndex = 2;
-            // 
             // grpLog
-            // 
+            //
             this.grpLog.Controls.Add(this.rtbLog);
             this.grpLog.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.grpLog.Font = new System.Drawing.Font("Segoe UI", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
-            this.grpLog.Location = new System.Drawing.Point(3, 3);
+            this.grpLog.Font = new System.Drawing.Font("Segoe UI", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(162))));
+            this.grpLog.Location = new System.Drawing.Point(711, 3);
             this.grpLog.Name = "grpLog";
             this.grpLog.Padding = new System.Windows.Forms.Padding(10);
-            this.grpLog.Size = new System.Drawing.Size(1165, 220);
-            this.grpLog.TabIndex = 0;
+            this.grpLog.Size = new System.Drawing.Size(466, 460);
+            this.grpLog.TabIndex = 1;
             this.grpLog.TabStop = false;
             this.grpLog.Text = "Canlı Log (TX/RX)";
-            // 
+            //
             // rtbLog
-            // 
+            //
             this.rtbLog.BackColor = System.Drawing.SystemColors.Control;
             this.rtbLog.Dock = System.Windows.Forms.DockStyle.Fill;
             this.rtbLog.Font = new System.Drawing.Font("Consolas", 10F);
             this.rtbLog.Location = new System.Drawing.Point(10, 30);
             this.rtbLog.Name = "rtbLog";
-            this.rtbLog.Size = new System.Drawing.Size(1145, 180);
+            this.rtbLog.Size = new System.Drawing.Size(446, 420);
             this.rtbLog.TabIndex = 0;
             this.rtbLog.Text = "";
             // 
@@ -852,10 +816,6 @@ namespace BaylanModemTest
             this.grpSteps.ResumeLayout(false);
             this.stepsLayout.ResumeLayout(false);
             this.stepsLayout.PerformLayout();
-            this.grpControls.ResumeLayout(false);
-            this.controlsLayout.ResumeLayout(false);
-            this.controlsLayout.PerformLayout();
-            this.bottomLayout.ResumeLayout(false);
             this.grpLog.ResumeLayout(false);
             this.ResumeLayout(false);
 
@@ -908,14 +868,12 @@ namespace BaylanModemTest
         private System.Windows.Forms.Panel pnlStep7Led;
         private System.Windows.Forms.Label lblStep7Name;
         private System.Windows.Forms.Label lblStep7Status;
-        private System.Windows.Forms.GroupBox grpControls;
-        private System.Windows.Forms.TableLayoutPanel controlsLayout;
         private System.Windows.Forms.Button btnStart;
         private System.Windows.Forms.Button btnStop;
         private System.Windows.Forms.ProgressBar overallProgress;
         private System.Windows.Forms.Label lblCurrentStep;
-        private System.Windows.Forms.TableLayoutPanel bottomLayout;
         private System.Windows.Forms.GroupBox grpLog;
         private System.Windows.Forms.RichTextBox rtbLog;
+        private System.Windows.Forms.TableLayoutPanel startStopLayout;
     }
 }
