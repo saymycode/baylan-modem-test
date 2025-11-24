@@ -104,7 +104,7 @@ namespace BaylanModemTest
             this.mainLayout.RowCount = 2;
             this.mainLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 272F));
             this.mainLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.mainLayout.Size = new System.Drawing.Size(1200, 755);
+            this.mainLayout.Size = new System.Drawing.Size(1200, 695);
             this.mainLayout.TabIndex = 0;
             // 
             // grpConnection
@@ -468,18 +468,18 @@ namespace BaylanModemTest
             this.middleLayout.Name = "middleLayout";
             this.middleLayout.RowCount = 1;
             this.middleLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.middleLayout.Size = new System.Drawing.Size(1180, 468);
+            this.middleLayout.Size = new System.Drawing.Size(1180, 408);
             this.middleLayout.TabIndex = 1;
             // 
             // grpSteps
             // 
             this.grpSteps.Controls.Add(this.stepsLayout);
-            this.grpSteps.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.grpSteps.Dock = System.Windows.Forms.DockStyle.Top;
             this.grpSteps.Font = new System.Drawing.Font("Segoe UI", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
             this.grpSteps.Location = new System.Drawing.Point(3, 3);
             this.grpSteps.Name = "grpSteps";
             this.grpSteps.Padding = new System.Windows.Forms.Padding(10);
-            this.grpSteps.Size = new System.Drawing.Size(702, 460);
+            this.grpSteps.Size = new System.Drawing.Size(702, 402);
             this.grpSteps.TabIndex = 0;
             this.grpSteps.TabStop = false;
             this.grpSteps.Text = "Test Adımları";
@@ -508,7 +508,7 @@ namespace BaylanModemTest
             this.stepsLayout.Controls.Add(this.lblStep7Name, 1, 5);
             this.stepsLayout.Controls.Add(this.lblStep7Status, 2, 5);
             this.stepsLayout.Controls.Add(this.pnlStep7Led, 0, 5);
-            this.stepsLayout.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.stepsLayout.Dock = System.Windows.Forms.DockStyle.Top;
             this.stepsLayout.Location = new System.Drawing.Point(10, 30);
             this.stepsLayout.Name = "stepsLayout";
             this.stepsLayout.RowCount = 6;
@@ -518,11 +518,11 @@ namespace BaylanModemTest
             this.stepsLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 60F));
             this.stepsLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 60F));
             this.stepsLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 60F));
-            this.stepsLayout.Size = new System.Drawing.Size(682, 420);
+            this.stepsLayout.Size = new System.Drawing.Size(682, 365);
             this.stepsLayout.TabIndex = 0;
             // 
             // pnlStep1Led
-            //
+            // 
             this.pnlStep1Led.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.pnlStep1Led.BackColor = System.Drawing.Color.DimGray;
             this.pnlStep1Led.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
@@ -531,9 +531,9 @@ namespace BaylanModemTest
             this.pnlStep1Led.Name = "pnlStep1Led";
             this.pnlStep1Led.Size = new System.Drawing.Size(54, 48);
             this.pnlStep1Led.TabIndex = 0;
-            //
+            // 
             // lblStep1Name
-            //
+            // 
             this.lblStep1Name.AutoSize = true;
             this.lblStep1Name.Dock = System.Windows.Forms.DockStyle.Fill;
             this.lblStep1Name.Font = new System.Drawing.Font("Segoe UI", 14.25F, System.Drawing.FontStyle.Bold);
@@ -543,9 +543,9 @@ namespace BaylanModemTest
             this.lblStep1Name.TabIndex = 1;
             this.lblStep1Name.Text = "Uyanma Testi";
             this.lblStep1Name.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            //
+            // 
             // lblStep1Status
-            //
+            // 
             this.lblStep1Status.AutoSize = true;
             this.lblStep1Status.Dock = System.Windows.Forms.DockStyle.Fill;
             this.lblStep1Status.Location = new System.Drawing.Point(545, 0);
@@ -554,9 +554,9 @@ namespace BaylanModemTest
             this.lblStep1Status.TabIndex = 2;
             this.lblStep1Status.Text = "Bekliyor";
             this.lblStep1Status.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            //
+            // 
             // pnlStep3Led
-            //
+            // 
             this.pnlStep3Led.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.pnlStep3Led.BackColor = System.Drawing.Color.DimGray;
             this.pnlStep3Led.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
@@ -565,7 +565,7 @@ namespace BaylanModemTest
             this.pnlStep3Led.Name = "pnlStep3Led";
             this.pnlStep3Led.Size = new System.Drawing.Size(54, 48);
             this.pnlStep3Led.TabIndex = 6;
-            //
+            // 
             // lblStep3Name
             // 
             this.lblStep3Name.AutoSize = true;
@@ -599,7 +599,7 @@ namespace BaylanModemTest
             this.pnlStep4Led.Name = "pnlStep4Led";
             this.pnlStep4Led.Size = new System.Drawing.Size(54, 48);
             this.pnlStep4Led.TabIndex = 9;
-            //
+            // 
             // lblStep4Name
             // 
             this.lblStep4Name.AutoSize = true;
@@ -633,7 +633,7 @@ namespace BaylanModemTest
             this.pnlStep5Led.Name = "pnlStep5Led";
             this.pnlStep5Led.Size = new System.Drawing.Size(54, 48);
             this.pnlStep5Led.TabIndex = 12;
-            //
+            // 
             // lblStep5Name
             // 
             this.lblStep5Name.AutoSize = true;
@@ -667,7 +667,7 @@ namespace BaylanModemTest
             this.pnlStep6Led.Name = "pnlStep6Led";
             this.pnlStep6Led.Size = new System.Drawing.Size(54, 48);
             this.pnlStep6Led.TabIndex = 15;
-            //
+            // 
             // lblStep6Name
             // 
             this.lblStep6Name.AutoSize = true;
@@ -698,7 +698,7 @@ namespace BaylanModemTest
             this.lblStep7Name.Font = new System.Drawing.Font("Segoe UI", 14.25F, System.Drawing.FontStyle.Bold);
             this.lblStep7Name.Location = new System.Drawing.Point(63, 300);
             this.lblStep7Name.Name = "lblStep7Name";
-            this.lblStep7Name.Size = new System.Drawing.Size(476, 60);
+            this.lblStep7Name.Size = new System.Drawing.Size(476, 65);
             this.lblStep7Name.TabIndex = 19;
             this.lblStep7Name.Text = "Finalize Testi";
             this.lblStep7Name.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -709,7 +709,7 @@ namespace BaylanModemTest
             this.lblStep7Status.Dock = System.Windows.Forms.DockStyle.Fill;
             this.lblStep7Status.Location = new System.Drawing.Point(545, 300);
             this.lblStep7Status.Name = "lblStep7Status";
-            this.lblStep7Status.Size = new System.Drawing.Size(134, 60);
+            this.lblStep7Status.Size = new System.Drawing.Size(134, 65);
             this.lblStep7Status.TabIndex = 20;
             this.lblStep7Status.Text = "Bekliyor";
             this.lblStep7Status.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -719,7 +719,7 @@ namespace BaylanModemTest
             this.pnlStep7Led.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.pnlStep7Led.BackColor = System.Drawing.Color.DimGray;
             this.pnlStep7Led.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.pnlStep7Led.Location = new System.Drawing.Point(3, 306);
+            this.pnlStep7Led.Location = new System.Drawing.Point(3, 308);
             this.pnlStep7Led.Margin = new System.Windows.Forms.Padding(3, 6, 3, 6);
             this.pnlStep7Led.Name = "pnlStep7Led";
             this.pnlStep7Led.Size = new System.Drawing.Size(54, 48);
@@ -733,7 +733,7 @@ namespace BaylanModemTest
             this.grpLog.Location = new System.Drawing.Point(711, 3);
             this.grpLog.Name = "grpLog";
             this.grpLog.Padding = new System.Windows.Forms.Padding(10);
-            this.grpLog.Size = new System.Drawing.Size(466, 460);
+            this.grpLog.Size = new System.Drawing.Size(466, 395);
             this.grpLog.TabIndex = 1;
             this.grpLog.TabStop = false;
             this.grpLog.Text = "Canlı Log (TX/RX)";
@@ -754,7 +754,7 @@ namespace BaylanModemTest
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
-            this.ClientSize = new System.Drawing.Size(1200, 756);
+            this.ClientSize = new System.Drawing.Size(1200, 694);
             this.Controls.Add(this.mainLayout);
             this.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;

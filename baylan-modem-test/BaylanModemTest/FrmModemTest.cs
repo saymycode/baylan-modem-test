@@ -23,6 +23,10 @@ namespace BaylanModemTest
         private Task _tcpListenerTask;
         private Task _comListenerTask;
         private CancellationTokenSource _listenerCts;
+        private readonly object _serialLock = new object();
+        private string _serialReadData = string.Empty;
+        private DateTime _modemDate = DateTime.MinValue;
+
 
         private readonly ConcurrentQueue<string> _incomingMessages = new ConcurrentQueue<string>();
 
@@ -182,7 +186,7 @@ namespace BaylanModemTest
             switch (stepNo)
             {
                 case 1:
-                    return new StepExpectation("FREE");
+                    return new StepExpectation("FREE SPACE");
 
                 case 2:
                     return new StepExpectation("RELAYOK", new Dictionary<string, string>
@@ -295,6 +299,54 @@ namespace BaylanModemTest
 
 
         // ====== Real IO (COM/TCP) ======
+        // ADD: eski uygulamadaki mantığın aynısı
+        private void Serial_DataReceived(object sender, SerialDataReceivedEventArgs e)
+        {
+            try
+            {
+                _modemDate = DateTime.MinValue;
+
+                if (_serial == null || !_serial.IsOpen)
+                {
+                    LogInfo("Usb Portu Kapalı");
+                    return;
+                }
+
+                string incomingData = _serial.ReadExisting();
+                if (string.IsNullOrEmpty(incomingData))
+                    return;
+
+                // sanitize (eski kodla birebir)
+                string sanitized = incomingData
+                    .Replace("\0", "")
+                    .Replace("\x1C", "<FS>")
+                    .Replace("\x1D", "<GS>")
+                    .Replace("\x1E", "<RS>")
+                    .Replace("\x1F", "<US>")
+                    .Replace("\x0A", "<LF>")
+                    .Replace("\x0D", "<CR>");
+
+                string snapshot;
+                lock (_serialLock)
+                {
+                    _serialReadData += sanitized;
+
+                    // Çok büyümesin diye son 64KB tut
+                    if (_serialReadData.Length > 64 * 1024)
+                        _serialReadData = _serialReadData.Substring(_serialReadData.Length - 64 * 1024);
+
+                    snapshot = _serialReadData;
+                }
+
+                // her gelişte biriken tüm buffer'ı kuyruğa bas
+                _incomingMessages.Enqueue(snapshot);
+                LogRx(sanitized);
+            }
+            catch (Exception ex)
+            {
+                LogError($"COM DataReceived hatası: {ex.Message}");
+            }
+        }
 
         private async Task OpenConnectionsAsync(CancellationToken ct)
         {
@@ -314,9 +366,13 @@ namespace BaylanModemTest
             _serial.Open();
             LogInfo("COM açıldı.");
 
+            _serial.DataReceived += Serial_DataReceived;
+
             _listenerCts = CancellationTokenSource.CreateLinkedTokenSource(ct);
 
-            _comListenerTask = Task.Run(() => ListenSerialAsync(_listenerCts.Token), ct);
+            // REMOVE: COM polling dinleyicisi artık yok
+            // _comListenerTask = Task.Run(() => ListenSerialAsync(_listenerCts.Token), ct);
+
             _tcpListenerTask = Task.Run(() => ListenTcpAsync(_listenerCts.Token), ct);
         }
 
@@ -443,6 +499,12 @@ namespace BaylanModemTest
         private void ClearIncomingMessages()
         {
             while (_incomingMessages.TryDequeue(out _)) { }
+
+            // ADD
+            lock (_serialLock)
+            {
+                _serialReadData = string.Empty;
+            }
         }
 
 
@@ -465,6 +527,14 @@ namespace BaylanModemTest
             _tcpListenerTask = null;
             _comListenerTask = null;
             _serial = null; _tcpPush = null; _tcpPull = null;
+            try
+            {
+                if (_serial != null)
+                    _serial.DataReceived -= Serial_DataReceived; // ADD
+            }
+            catch { }
+
+            try { _serial?.Close(); } catch { }
 
             LockSettings(false);
 
