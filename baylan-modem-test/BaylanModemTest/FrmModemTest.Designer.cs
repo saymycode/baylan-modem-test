@@ -56,27 +56,27 @@ namespace BaylanModemTest
             this.lblCurrentStep = new System.Windows.Forms.Label();
             this.middleLayout = new System.Windows.Forms.TableLayoutPanel();
             this.grpSteps = new System.Windows.Forms.GroupBox();
-            this.stepsLayout = new System.Windows.Forms.TableLayoutPanel();
-            this.pnlStep1Led = new System.Windows.Forms.Panel();
-            this.lblStep1Name = new System.Windows.Forms.Label();
-            this.lblStep1Status = new System.Windows.Forms.Label();
-            this.pnlStep3Led = new System.Windows.Forms.Panel();
-            this.lblStep3Name = new System.Windows.Forms.Label();
-            this.lblStep3Status = new System.Windows.Forms.Label();
-            this.pnlStep4Led = new System.Windows.Forms.Panel();
-            this.lblStep4Name = new System.Windows.Forms.Label();
-            this.lblStep4Status = new System.Windows.Forms.Label();
-            this.pnlStep5Led = new System.Windows.Forms.Panel();
-            this.lblStep5Name = new System.Windows.Forms.Label();
-            this.lblStep5Status = new System.Windows.Forms.Label();
-            this.pnlStep6Led = new System.Windows.Forms.Panel();
-            this.lblStep6Name = new System.Windows.Forms.Label();
-            this.lblStep6Status = new System.Windows.Forms.Label();
-            this.lblStep7Name = new System.Windows.Forms.Label();
-            this.lblStep7Status = new System.Windows.Forms.Label();
-            this.pnlStep7Led = new System.Windows.Forms.Panel();
             this.grpLog = new System.Windows.Forms.GroupBox();
             this.rtbLog = new System.Windows.Forms.RichTextBox();
+            this.lblStep7Status = new System.Windows.Forms.Label();
+            this.lblStep7Name = new System.Windows.Forms.Label();
+            this.pnlStep7Led = new System.Windows.Forms.Panel();
+            this.lblStep4Status = new System.Windows.Forms.Label();
+            this.lblStep4Name = new System.Windows.Forms.Label();
+            this.pnlStep4Led = new System.Windows.Forms.Panel();
+            this.lblStep3Status = new System.Windows.Forms.Label();
+            this.lblStep3Name = new System.Windows.Forms.Label();
+            this.pnlStep3Led = new System.Windows.Forms.Panel();
+            this.lblStep5Status = new System.Windows.Forms.Label();
+            this.lblStep5Name = new System.Windows.Forms.Label();
+            this.pnlStep5Led = new System.Windows.Forms.Panel();
+            this.lblStep1Status = new System.Windows.Forms.Label();
+            this.lblStep1Name = new System.Windows.Forms.Label();
+            this.pnlStep1Led = new System.Windows.Forms.Panel();
+            this.stepsLayout = new System.Windows.Forms.TableLayoutPanel();
+            this.lblStep6Status = new System.Windows.Forms.Label();
+            this.pnlStep6Led = new System.Windows.Forms.Panel();
+            this.lblStep6Name = new System.Windows.Forms.Label();
             this.mainLayout.SuspendLayout();
             this.grpConnection.SuspendLayout();
             this.connectionLayout.SuspendLayout();
@@ -87,8 +87,8 @@ namespace BaylanModemTest
             this.startStopLayout.SuspendLayout();
             this.middleLayout.SuspendLayout();
             this.grpSteps.SuspendLayout();
-            this.stepsLayout.SuspendLayout();
             this.grpLog.SuspendLayout();
+            this.stepsLayout.SuspendLayout();
             this.SuspendLayout();
             // 
             // mainLayout
@@ -104,7 +104,7 @@ namespace BaylanModemTest
             this.mainLayout.RowCount = 2;
             this.mainLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 272F));
             this.mainLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.mainLayout.Size = new System.Drawing.Size(1200, 695);
+            this.mainLayout.Size = new System.Drawing.Size(1200, 705);
             this.mainLayout.TabIndex = 0;
             // 
             // grpConnection
@@ -423,7 +423,6 @@ namespace BaylanModemTest
             // 
             this.btnStop.BackColor = System.Drawing.Color.LightCoral;
             this.btnStop.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.btnStop.Enabled = false;
             this.btnStop.Font = new System.Drawing.Font("Segoe UI", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
             this.btnStop.Location = new System.Drawing.Point(198, 3);
             this.btnStop.Name = "btnStop";
@@ -468,7 +467,7 @@ namespace BaylanModemTest
             this.middleLayout.Name = "middleLayout";
             this.middleLayout.RowCount = 1;
             this.middleLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.middleLayout.Size = new System.Drawing.Size(1180, 408);
+            this.middleLayout.Size = new System.Drawing.Size(1180, 418);
             this.middleLayout.TabIndex = 1;
             // 
             // grpSteps
@@ -479,10 +478,204 @@ namespace BaylanModemTest
             this.grpSteps.Location = new System.Drawing.Point(3, 3);
             this.grpSteps.Name = "grpSteps";
             this.grpSteps.Padding = new System.Windows.Forms.Padding(10);
-            this.grpSteps.Size = new System.Drawing.Size(702, 402);
+            this.grpSteps.Size = new System.Drawing.Size(702, 412);
             this.grpSteps.TabIndex = 0;
             this.grpSteps.TabStop = false;
             this.grpSteps.Text = "Test Adımları";
+            // 
+            // grpLog
+            // 
+            this.grpLog.Controls.Add(this.rtbLog);
+            this.grpLog.Dock = System.Windows.Forms.DockStyle.Top;
+            this.grpLog.Font = new System.Drawing.Font("Segoe UI", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
+            this.grpLog.Location = new System.Drawing.Point(711, 3);
+            this.grpLog.Name = "grpLog";
+            this.grpLog.Padding = new System.Windows.Forms.Padding(10);
+            this.grpLog.Size = new System.Drawing.Size(466, 412);
+            this.grpLog.TabIndex = 1;
+            this.grpLog.TabStop = false;
+            this.grpLog.Text = "Canlı Log (TX/RX)";
+            // 
+            // rtbLog
+            // 
+            this.rtbLog.BackColor = System.Drawing.SystemColors.Control;
+            this.rtbLog.Dock = System.Windows.Forms.DockStyle.Top;
+            this.rtbLog.Font = new System.Drawing.Font("Consolas", 10F);
+            this.rtbLog.Location = new System.Drawing.Point(10, 30);
+            this.rtbLog.Name = "rtbLog";
+            this.rtbLog.Size = new System.Drawing.Size(446, 365);
+            this.rtbLog.TabIndex = 0;
+            this.rtbLog.Text = "";
+            // 
+            // lblStep7Status
+            // 
+            this.lblStep7Status.AutoSize = true;
+            this.lblStep7Status.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.lblStep7Status.Location = new System.Drawing.Point(545, 300);
+            this.lblStep7Status.Name = "lblStep7Status";
+            this.lblStep7Status.Size = new System.Drawing.Size(134, 65);
+            this.lblStep7Status.TabIndex = 20;
+            this.lblStep7Status.Text = "Bekliyor";
+            this.lblStep7Status.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // lblStep7Name
+            // 
+            this.lblStep7Name.AutoSize = true;
+            this.lblStep7Name.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.lblStep7Name.Font = new System.Drawing.Font("Segoe UI", 14.25F, System.Drawing.FontStyle.Bold);
+            this.lblStep7Name.Location = new System.Drawing.Point(63, 300);
+            this.lblStep7Name.Name = "lblStep7Name";
+            this.lblStep7Name.Size = new System.Drawing.Size(476, 65);
+            this.lblStep7Name.TabIndex = 19;
+            this.lblStep7Name.Text = "Finalize Testi";
+            this.lblStep7Name.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // pnlStep7Led
+            // 
+            this.pnlStep7Led.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.pnlStep7Led.BackColor = System.Drawing.Color.DimGray;
+            this.pnlStep7Led.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.pnlStep7Led.Location = new System.Drawing.Point(3, 308);
+            this.pnlStep7Led.Margin = new System.Windows.Forms.Padding(3, 6, 3, 6);
+            this.pnlStep7Led.Name = "pnlStep7Led";
+            this.pnlStep7Led.Size = new System.Drawing.Size(54, 48);
+            this.pnlStep7Led.TabIndex = 18;
+            // 
+            // lblStep4Status
+            // 
+            this.lblStep4Status.AutoSize = true;
+            this.lblStep4Status.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.lblStep4Status.Location = new System.Drawing.Point(545, 240);
+            this.lblStep4Status.Name = "lblStep4Status";
+            this.lblStep4Status.Size = new System.Drawing.Size(134, 60);
+            this.lblStep4Status.TabIndex = 11;
+            this.lblStep4Status.Text = "Bekliyor";
+            this.lblStep4Status.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // lblStep4Name
+            // 
+            this.lblStep4Name.AutoSize = true;
+            this.lblStep4Name.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.lblStep4Name.Font = new System.Drawing.Font("Segoe UI", 14.25F, System.Drawing.FontStyle.Bold);
+            this.lblStep4Name.Location = new System.Drawing.Point(63, 240);
+            this.lblStep4Name.Name = "lblStep4Name";
+            this.lblStep4Name.Size = new System.Drawing.Size(476, 60);
+            this.lblStep4Name.TabIndex = 10;
+            this.lblStep4Name.Text = "Sayaç Okuma Testi";
+            this.lblStep4Name.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // pnlStep4Led
+            // 
+            this.pnlStep4Led.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.pnlStep4Led.BackColor = System.Drawing.Color.DimGray;
+            this.pnlStep4Led.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.pnlStep4Led.Location = new System.Drawing.Point(3, 246);
+            this.pnlStep4Led.Margin = new System.Windows.Forms.Padding(3, 6, 3, 6);
+            this.pnlStep4Led.Name = "pnlStep4Led";
+            this.pnlStep4Led.Size = new System.Drawing.Size(54, 48);
+            this.pnlStep4Led.TabIndex = 9;
+            // 
+            // lblStep3Status
+            // 
+            this.lblStep3Status.AutoSize = true;
+            this.lblStep3Status.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.lblStep3Status.Location = new System.Drawing.Point(545, 180);
+            this.lblStep3Status.Name = "lblStep3Status";
+            this.lblStep3Status.Size = new System.Drawing.Size(134, 60);
+            this.lblStep3Status.TabIndex = 8;
+            this.lblStep3Status.Text = "Bekliyor";
+            this.lblStep3Status.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // lblStep3Name
+            // 
+            this.lblStep3Name.AutoSize = true;
+            this.lblStep3Name.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.lblStep3Name.Font = new System.Drawing.Font("Segoe UI", 14.25F, System.Drawing.FontStyle.Bold);
+            this.lblStep3Name.Location = new System.Drawing.Point(63, 180);
+            this.lblStep3Name.Name = "lblStep3Name";
+            this.lblStep3Name.Size = new System.Drawing.Size(476, 60);
+            this.lblStep3Name.TabIndex = 7;
+            this.lblStep3Name.Text = "Sayaç Ekleme Testi";
+            this.lblStep3Name.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // pnlStep3Led
+            // 
+            this.pnlStep3Led.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.pnlStep3Led.BackColor = System.Drawing.Color.DimGray;
+            this.pnlStep3Led.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.pnlStep3Led.Location = new System.Drawing.Point(3, 186);
+            this.pnlStep3Led.Margin = new System.Windows.Forms.Padding(3, 6, 3, 6);
+            this.pnlStep3Led.Name = "pnlStep3Led";
+            this.pnlStep3Led.Size = new System.Drawing.Size(54, 48);
+            this.pnlStep3Led.TabIndex = 6;
+            // 
+            // lblStep5Status
+            // 
+            this.lblStep5Status.AutoSize = true;
+            this.lblStep5Status.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.lblStep5Status.Location = new System.Drawing.Point(545, 60);
+            this.lblStep5Status.Name = "lblStep5Status";
+            this.lblStep5Status.Size = new System.Drawing.Size(134, 60);
+            this.lblStep5Status.TabIndex = 14;
+            this.lblStep5Status.Text = "Bekliyor";
+            this.lblStep5Status.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // lblStep5Name
+            // 
+            this.lblStep5Name.AutoSize = true;
+            this.lblStep5Name.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.lblStep5Name.Font = new System.Drawing.Font("Segoe UI", 14.25F, System.Drawing.FontStyle.Bold);
+            this.lblStep5Name.Location = new System.Drawing.Point(63, 60);
+            this.lblStep5Name.Name = "lblStep5Name";
+            this.lblStep5Name.Size = new System.Drawing.Size(476, 60);
+            this.lblStep5Name.TabIndex = 13;
+            this.lblStep5Name.Text = "Röle Testi";
+            this.lblStep5Name.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // pnlStep5Led
+            // 
+            this.pnlStep5Led.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.pnlStep5Led.BackColor = System.Drawing.Color.DimGray;
+            this.pnlStep5Led.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.pnlStep5Led.Location = new System.Drawing.Point(3, 66);
+            this.pnlStep5Led.Margin = new System.Windows.Forms.Padding(3, 6, 3, 6);
+            this.pnlStep5Led.Name = "pnlStep5Led";
+            this.pnlStep5Led.Size = new System.Drawing.Size(54, 48);
+            this.pnlStep5Led.TabIndex = 12;
+            // 
+            // lblStep1Status
+            // 
+            this.lblStep1Status.AutoSize = true;
+            this.lblStep1Status.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.lblStep1Status.Location = new System.Drawing.Point(545, 0);
+            this.lblStep1Status.Name = "lblStep1Status";
+            this.lblStep1Status.Size = new System.Drawing.Size(134, 60);
+            this.lblStep1Status.TabIndex = 2;
+            this.lblStep1Status.Text = "Bekliyor";
+            this.lblStep1Status.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // lblStep1Name
+            // 
+            this.lblStep1Name.AutoSize = true;
+            this.lblStep1Name.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.lblStep1Name.Font = new System.Drawing.Font("Segoe UI", 14.25F, System.Drawing.FontStyle.Bold);
+            this.lblStep1Name.Location = new System.Drawing.Point(63, 0);
+            this.lblStep1Name.Name = "lblStep1Name";
+            this.lblStep1Name.Size = new System.Drawing.Size(476, 60);
+            this.lblStep1Name.TabIndex = 1;
+            this.lblStep1Name.Text = "Uyanma Testi";
+            this.lblStep1Name.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // pnlStep1Led
+            // 
+            this.pnlStep1Led.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.pnlStep1Led.BackColor = System.Drawing.Color.DimGray;
+            this.pnlStep1Led.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.pnlStep1Led.Location = new System.Drawing.Point(3, 6);
+            this.pnlStep1Led.Margin = new System.Windows.Forms.Padding(3, 6, 3, 6);
+            this.pnlStep1Led.Name = "pnlStep1Led";
+            this.pnlStep1Led.Size = new System.Drawing.Size(54, 48);
+            this.pnlStep1Led.TabIndex = 0;
             // 
             // stepsLayout
             // 
@@ -521,148 +714,23 @@ namespace BaylanModemTest
             this.stepsLayout.Size = new System.Drawing.Size(682, 365);
             this.stepsLayout.TabIndex = 0;
             // 
-            // pnlStep1Led
+            // lblStep6Status
             // 
-            this.pnlStep1Led.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.pnlStep1Led.BackColor = System.Drawing.Color.DimGray;
-            this.pnlStep1Led.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.pnlStep1Led.Location = new System.Drawing.Point(3, 6);
-            this.pnlStep1Led.Margin = new System.Windows.Forms.Padding(3, 6, 3, 6);
-            this.pnlStep1Led.Name = "pnlStep1Led";
-            this.pnlStep1Led.Size = new System.Drawing.Size(54, 48);
-            this.pnlStep1Led.TabIndex = 0;
-            // 
-            // lblStep1Name
-            // 
-            this.lblStep1Name.AutoSize = true;
-            this.lblStep1Name.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.lblStep1Name.Font = new System.Drawing.Font("Segoe UI", 14.25F, System.Drawing.FontStyle.Bold);
-            this.lblStep1Name.Location = new System.Drawing.Point(63, 0);
-            this.lblStep1Name.Name = "lblStep1Name";
-            this.lblStep1Name.Size = new System.Drawing.Size(476, 60);
-            this.lblStep1Name.TabIndex = 1;
-            this.lblStep1Name.Text = "Uyanma Testi";
-            this.lblStep1Name.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // lblStep1Status
-            // 
-            this.lblStep1Status.AutoSize = true;
-            this.lblStep1Status.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.lblStep1Status.Location = new System.Drawing.Point(545, 0);
-            this.lblStep1Status.Name = "lblStep1Status";
-            this.lblStep1Status.Size = new System.Drawing.Size(134, 60);
-            this.lblStep1Status.TabIndex = 2;
-            this.lblStep1Status.Text = "Bekliyor";
-            this.lblStep1Status.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // pnlStep3Led
-            // 
-            this.pnlStep3Led.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.pnlStep3Led.BackColor = System.Drawing.Color.DimGray;
-            this.pnlStep3Led.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.pnlStep3Led.Location = new System.Drawing.Point(3, 66);
-            this.pnlStep3Led.Margin = new System.Windows.Forms.Padding(3, 6, 3, 6);
-            this.pnlStep3Led.Name = "pnlStep3Led";
-            this.pnlStep3Led.Size = new System.Drawing.Size(54, 48);
-            this.pnlStep3Led.TabIndex = 6;
-            // 
-            // lblStep3Name
-            // 
-            this.lblStep3Name.AutoSize = true;
-            this.lblStep3Name.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.lblStep3Name.Font = new System.Drawing.Font("Segoe UI", 14.25F, System.Drawing.FontStyle.Bold);
-            this.lblStep3Name.Location = new System.Drawing.Point(63, 60);
-            this.lblStep3Name.Name = "lblStep3Name";
-            this.lblStep3Name.Size = new System.Drawing.Size(476, 60);
-            this.lblStep3Name.TabIndex = 7;
-            this.lblStep3Name.Text = "Sayaç Ekleme Testi";
-            this.lblStep3Name.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // lblStep3Status
-            // 
-            this.lblStep3Status.AutoSize = true;
-            this.lblStep3Status.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.lblStep3Status.Location = new System.Drawing.Point(545, 60);
-            this.lblStep3Status.Name = "lblStep3Status";
-            this.lblStep3Status.Size = new System.Drawing.Size(134, 60);
-            this.lblStep3Status.TabIndex = 8;
-            this.lblStep3Status.Text = "Bekliyor";
-            this.lblStep3Status.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // pnlStep4Led
-            // 
-            this.pnlStep4Led.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.pnlStep4Led.BackColor = System.Drawing.Color.DimGray;
-            this.pnlStep4Led.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.pnlStep4Led.Location = new System.Drawing.Point(3, 126);
-            this.pnlStep4Led.Margin = new System.Windows.Forms.Padding(3, 6, 3, 6);
-            this.pnlStep4Led.Name = "pnlStep4Led";
-            this.pnlStep4Led.Size = new System.Drawing.Size(54, 48);
-            this.pnlStep4Led.TabIndex = 9;
-            // 
-            // lblStep4Name
-            // 
-            this.lblStep4Name.AutoSize = true;
-            this.lblStep4Name.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.lblStep4Name.Font = new System.Drawing.Font("Segoe UI", 14.25F, System.Drawing.FontStyle.Bold);
-            this.lblStep4Name.Location = new System.Drawing.Point(63, 120);
-            this.lblStep4Name.Name = "lblStep4Name";
-            this.lblStep4Name.Size = new System.Drawing.Size(476, 60);
-            this.lblStep4Name.TabIndex = 10;
-            this.lblStep4Name.Text = "Sayaç Okuma Testi";
-            this.lblStep4Name.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // lblStep4Status
-            // 
-            this.lblStep4Status.AutoSize = true;
-            this.lblStep4Status.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.lblStep4Status.Location = new System.Drawing.Point(545, 120);
-            this.lblStep4Status.Name = "lblStep4Status";
-            this.lblStep4Status.Size = new System.Drawing.Size(134, 60);
-            this.lblStep4Status.TabIndex = 11;
-            this.lblStep4Status.Text = "Bekliyor";
-            this.lblStep4Status.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // pnlStep5Led
-            // 
-            this.pnlStep5Led.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.pnlStep5Led.BackColor = System.Drawing.Color.DimGray;
-            this.pnlStep5Led.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.pnlStep5Led.Location = new System.Drawing.Point(3, 186);
-            this.pnlStep5Led.Margin = new System.Windows.Forms.Padding(3, 6, 3, 6);
-            this.pnlStep5Led.Name = "pnlStep5Led";
-            this.pnlStep5Led.Size = new System.Drawing.Size(54, 48);
-            this.pnlStep5Led.TabIndex = 12;
-            // 
-            // lblStep5Name
-            // 
-            this.lblStep5Name.AutoSize = true;
-            this.lblStep5Name.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.lblStep5Name.Font = new System.Drawing.Font("Segoe UI", 14.25F, System.Drawing.FontStyle.Bold);
-            this.lblStep5Name.Location = new System.Drawing.Point(63, 180);
-            this.lblStep5Name.Name = "lblStep5Name";
-            this.lblStep5Name.Size = new System.Drawing.Size(476, 60);
-            this.lblStep5Name.TabIndex = 13;
-            this.lblStep5Name.Text = "Röle Testi";
-            this.lblStep5Name.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // lblStep5Status
-            // 
-            this.lblStep5Status.AutoSize = true;
-            this.lblStep5Status.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.lblStep5Status.Location = new System.Drawing.Point(545, 180);
-            this.lblStep5Status.Name = "lblStep5Status";
-            this.lblStep5Status.Size = new System.Drawing.Size(134, 60);
-            this.lblStep5Status.TabIndex = 14;
-            this.lblStep5Status.Text = "Bekliyor";
-            this.lblStep5Status.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.lblStep6Status.AutoSize = true;
+            this.lblStep6Status.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.lblStep6Status.Location = new System.Drawing.Point(545, 120);
+            this.lblStep6Status.Name = "lblStep6Status";
+            this.lblStep6Status.Size = new System.Drawing.Size(134, 60);
+            this.lblStep6Status.TabIndex = 17;
+            this.lblStep6Status.Text = "Bekliyor";
+            this.lblStep6Status.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // pnlStep6Led
             // 
             this.pnlStep6Led.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.pnlStep6Led.BackColor = System.Drawing.Color.DimGray;
             this.pnlStep6Led.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.pnlStep6Led.Location = new System.Drawing.Point(3, 246);
+            this.pnlStep6Led.Location = new System.Drawing.Point(3, 126);
             this.pnlStep6Led.Margin = new System.Windows.Forms.Padding(3, 6, 3, 6);
             this.pnlStep6Led.Name = "pnlStep6Led";
             this.pnlStep6Led.Size = new System.Drawing.Size(54, 48);
@@ -673,88 +741,19 @@ namespace BaylanModemTest
             this.lblStep6Name.AutoSize = true;
             this.lblStep6Name.Dock = System.Windows.Forms.DockStyle.Fill;
             this.lblStep6Name.Font = new System.Drawing.Font("Segoe UI", 14.25F, System.Drawing.FontStyle.Bold);
-            this.lblStep6Name.Location = new System.Drawing.Point(63, 240);
+            this.lblStep6Name.Location = new System.Drawing.Point(63, 120);
             this.lblStep6Name.Name = "lblStep6Name";
             this.lblStep6Name.Size = new System.Drawing.Size(476, 60);
             this.lblStep6Name.TabIndex = 16;
             this.lblStep6Name.Text = "Input Testi";
             this.lblStep6Name.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
-            // lblStep6Status
-            // 
-            this.lblStep6Status.AutoSize = true;
-            this.lblStep6Status.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.lblStep6Status.Location = new System.Drawing.Point(545, 240);
-            this.lblStep6Status.Name = "lblStep6Status";
-            this.lblStep6Status.Size = new System.Drawing.Size(134, 60);
-            this.lblStep6Status.TabIndex = 17;
-            this.lblStep6Status.Text = "Bekliyor";
-            this.lblStep6Status.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // lblStep7Name
-            // 
-            this.lblStep7Name.AutoSize = true;
-            this.lblStep7Name.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.lblStep7Name.Font = new System.Drawing.Font("Segoe UI", 14.25F, System.Drawing.FontStyle.Bold);
-            this.lblStep7Name.Location = new System.Drawing.Point(63, 300);
-            this.lblStep7Name.Name = "lblStep7Name";
-            this.lblStep7Name.Size = new System.Drawing.Size(476, 65);
-            this.lblStep7Name.TabIndex = 19;
-            this.lblStep7Name.Text = "Finalize Testi";
-            this.lblStep7Name.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // lblStep7Status
-            // 
-            this.lblStep7Status.AutoSize = true;
-            this.lblStep7Status.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.lblStep7Status.Location = new System.Drawing.Point(545, 300);
-            this.lblStep7Status.Name = "lblStep7Status";
-            this.lblStep7Status.Size = new System.Drawing.Size(134, 65);
-            this.lblStep7Status.TabIndex = 20;
-            this.lblStep7Status.Text = "Bekliyor";
-            this.lblStep7Status.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // pnlStep7Led
-            // 
-            this.pnlStep7Led.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.pnlStep7Led.BackColor = System.Drawing.Color.DimGray;
-            this.pnlStep7Led.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.pnlStep7Led.Location = new System.Drawing.Point(3, 308);
-            this.pnlStep7Led.Margin = new System.Windows.Forms.Padding(3, 6, 3, 6);
-            this.pnlStep7Led.Name = "pnlStep7Led";
-            this.pnlStep7Led.Size = new System.Drawing.Size(54, 48);
-            this.pnlStep7Led.TabIndex = 18;
-            // 
-            // grpLog
-            // 
-            this.grpLog.Controls.Add(this.rtbLog);
-            this.grpLog.Dock = System.Windows.Forms.DockStyle.Top;
-            this.grpLog.Font = new System.Drawing.Font("Segoe UI", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
-            this.grpLog.Location = new System.Drawing.Point(711, 3);
-            this.grpLog.Name = "grpLog";
-            this.grpLog.Padding = new System.Windows.Forms.Padding(10);
-            this.grpLog.Size = new System.Drawing.Size(466, 395);
-            this.grpLog.TabIndex = 1;
-            this.grpLog.TabStop = false;
-            this.grpLog.Text = "Canlı Log (TX/RX)";
-            // 
-            // rtbLog
-            // 
-            this.rtbLog.BackColor = System.Drawing.SystemColors.Control;
-            this.rtbLog.Dock = System.Windows.Forms.DockStyle.Top;
-            this.rtbLog.Font = new System.Drawing.Font("Consolas", 10F);
-            this.rtbLog.Location = new System.Drawing.Point(10, 30);
-            this.rtbLog.Name = "rtbLog";
-            this.rtbLog.Size = new System.Drawing.Size(446, 420);
-            this.rtbLog.TabIndex = 0;
-            this.rtbLog.Text = "";
-            // 
             // FrmModemTest
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
-            this.ClientSize = new System.Drawing.Size(1200, 694);
+            this.ClientSize = new System.Drawing.Size(1200, 705);
             this.Controls.Add(this.mainLayout);
             this.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
@@ -775,9 +774,9 @@ namespace BaylanModemTest
             this.startStopLayout.ResumeLayout(false);
             this.middleLayout.ResumeLayout(false);
             this.grpSteps.ResumeLayout(false);
+            this.grpLog.ResumeLayout(false);
             this.stepsLayout.ResumeLayout(false);
             this.stepsLayout.PerformLayout();
-            this.grpLog.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -807,25 +806,6 @@ namespace BaylanModemTest
         private System.Windows.Forms.NumericUpDown numPullPort;
         private System.Windows.Forms.TableLayoutPanel middleLayout;
         private System.Windows.Forms.GroupBox grpSteps;
-        private System.Windows.Forms.TableLayoutPanel stepsLayout;
-        private System.Windows.Forms.Panel pnlStep1Led;
-        private System.Windows.Forms.Label lblStep1Name;
-        private System.Windows.Forms.Label lblStep1Status;
-        private System.Windows.Forms.Panel pnlStep3Led;
-        private System.Windows.Forms.Label lblStep3Name;
-        private System.Windows.Forms.Label lblStep3Status;
-        private System.Windows.Forms.Panel pnlStep4Led;
-        private System.Windows.Forms.Label lblStep4Name;
-        private System.Windows.Forms.Label lblStep4Status;
-        private System.Windows.Forms.Panel pnlStep5Led;
-        private System.Windows.Forms.Label lblStep5Name;
-        private System.Windows.Forms.Label lblStep5Status;
-        private System.Windows.Forms.Panel pnlStep6Led;
-        private System.Windows.Forms.Label lblStep6Name;
-        private System.Windows.Forms.Label lblStep6Status;
-        private System.Windows.Forms.Panel pnlStep7Led;
-        private System.Windows.Forms.Label lblStep7Name;
-        private System.Windows.Forms.Label lblStep7Status;
         private System.Windows.Forms.Button btnStart;
         private System.Windows.Forms.Button btnStop;
         private System.Windows.Forms.ProgressBar overallProgress;
@@ -833,5 +813,24 @@ namespace BaylanModemTest
         private System.Windows.Forms.GroupBox grpLog;
         private System.Windows.Forms.RichTextBox rtbLog;
         private System.Windows.Forms.TableLayoutPanel startStopLayout;
+        private System.Windows.Forms.TableLayoutPanel stepsLayout;
+        private System.Windows.Forms.Panel pnlStep1Led;
+        private System.Windows.Forms.Label lblStep1Name;
+        private System.Windows.Forms.Label lblStep1Status;
+        private System.Windows.Forms.Panel pnlStep5Led;
+        private System.Windows.Forms.Label lblStep5Name;
+        private System.Windows.Forms.Label lblStep5Status;
+        private System.Windows.Forms.Panel pnlStep6Led;
+        private System.Windows.Forms.Label lblStep6Name;
+        private System.Windows.Forms.Label lblStep6Status;
+        private System.Windows.Forms.Panel pnlStep3Led;
+        private System.Windows.Forms.Label lblStep3Name;
+        private System.Windows.Forms.Label lblStep3Status;
+        private System.Windows.Forms.Panel pnlStep4Led;
+        private System.Windows.Forms.Label lblStep4Name;
+        private System.Windows.Forms.Label lblStep4Status;
+        private System.Windows.Forms.Panel pnlStep7Led;
+        private System.Windows.Forms.Label lblStep7Name;
+        private System.Windows.Forms.Label lblStep7Status;
     }
 }

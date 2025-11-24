@@ -112,6 +112,9 @@ namespace BaylanModemTest
 
                     step.SetPass();
                     LogInfo($"Adım {step.Number} geçti.");
+
+                    // --- ADIM TAMAMLANDI → 5-10 sn bekleme ---
+                    await Task.Delay(7000, ct);  // 7 saniye (ister 5000–10000 arası yaparsın)
                 }
 
                 overallProgress.Value = 100;
@@ -130,31 +133,122 @@ namespace BaylanModemTest
                 StopAll("Hata.", true);
             }
         }
+        private class StepCommandPlanItem
+        {
+            public string Cmd { get; set; }
+            public StepExpectation Expectation { get; set; }
+
+            public StepCommandPlanItem(string cmd, StepExpectation exp)
+            {
+                Cmd = cmd;
+                Expectation = exp;
+            }
+        }
+
+
 
         private async Task<bool> RunStepAsync(TestStep step, CancellationToken ct)
         {
-            if (step.Number == 2)
-                return await RunRelayStepAsync(ct);
+            var plan = GetStepCommandPlan(step.Number);
+            //var plan = GetStepCommandPlan(2);
 
-            // Her adım için dummy/gerçek komut seti burada
-            var txCommands = GetStepTxCommands(step.Number);
-            var expectedRx = GetStepExpectation(step.Number);
-
-            foreach (var cmd in txCommands)
+            foreach (var item in plan)
             {
                 ct.ThrowIfCancellationRequested();
 
-                LogTx(cmd);
-                string rx = await SendAndReceiveAsync(cmd, expectedRx, ct);
+                LogTx(item.Cmd);
+                string rx = await SendAndReceiveAsync(item.Cmd, item.Expectation, ct);
 
-                if (!ValidateRx(rx, expectedRx, out var error))
+                string error;
+                if (!ValidateRx(rx, item.Expectation, out error))
                 {
                     LogError($"Adım {step.Number} doğrulama hatası: {error}");
                     return false;
                 }
             }
+
             Thread.Sleep(2000);
             return true;
+        }
+        private List<StepCommandPlanItem> GetStepCommandPlan(int stepNo)
+        {
+            switch (stepNo)
+            {
+                case 1: // Uyanma (dummy)
+                    return new List<StepCommandPlanItem>
+            {
+                new StepCommandPlanItem(
+                    "QCK_RESET_OSOS\r\n",
+                    new StepExpectation("FREE SPACE")
+                )
+            };
+
+                case 2: // Röle (uyanma gibi, 2 komut + 2 expectation)
+                    return new List<StepCommandPlanItem>
+            {
+                new StepCommandPlanItem(
+                    BuildRelayCommand(1),
+                    new StepExpectation("RPS01:1")
+                ),
+                new StepCommandPlanItem(
+                    BuildRelayCommand(0),
+                    new StepExpectation("RPS01:0")
+                )
+            };
+
+                case 3: // Input (dummy)
+                    return new List<StepCommandPlanItem>
+            {
+                new StepCommandPlanItem(
+                    "AT+INPUT?\r\n",
+                    new StepExpectation("INPUTOK", new Dictionary<string, string>
+                    {
+                        {"INPUT", "HIGH"}
+                    })
+                )
+            };
+
+                case 4: // Sayaç ekleme (dummy)
+                    return new List<StepCommandPlanItem>
+            {
+                new StepCommandPlanItem(
+                    "AT+MTRADD=00112233\r\n",
+                    new StepExpectation("MTRADDED", new Dictionary<string, string>
+                    {
+                        {"RESULT", "OK"},
+                        {"METER", "00112233"}
+                    })
+                )
+            };
+
+                case 5: // Sayaç okuma (dummy)
+                    return new List<StepCommandPlanItem>
+            {
+                new StepCommandPlanItem(
+                    "AT+MTRRD=00112233\r\n",
+                    new StepExpectation("MTRDATA", new Dictionary<string, string>
+                    {
+                        {"METER", "00112233"},
+                        {"STATUS", "OK"}
+                    })
+                )
+            };
+
+                case 6: // Finalize (dummy)
+                    return new List<StepCommandPlanItem>
+            {
+                new StepCommandPlanItem(
+                    "AT+FIN\r\n",
+                    new StepExpectation("FINOK", new Dictionary<string, string>
+                    {
+                        {"STATUS", "OK"}
+                    })
+                )
+            };
+
+                default:
+                    return new List<StepCommandPlanItem>();
+            }
         }
 
         private async Task<bool> RunRelayStepAsync(CancellationToken ct)
@@ -405,6 +499,7 @@ namespace BaylanModemTest
                 .Replace("\x0D", "<CR>");
         }
 
+
         private IEnumerable<string> CollectSerialMessages(string incomingData)
         {
             var messages = new List<string>();
@@ -412,29 +507,47 @@ namespace BaylanModemTest
             lock (_serialLock)
             {
                 _serialBuffer.Append(incomingData);
-
                 var text = _serialBuffer.ToString();
-                var parts = text.Split(new[] { "\r\n", "\n", "\r" }, StringSplitOptions.None);
 
-                // son parça tamamlanmamış mesaj olabilir
-                var trailing = parts[parts.Length - 1];
+                // 1) Önce FS (\x1C) ile biten OSOS paketlerini çek
+                int fsIndex;
+                while ((fsIndex = text.IndexOf('\x1C')) >= 0)
+                {
+                    var msg = text.Substring(0, fsIndex);
+                    if (!string.IsNullOrWhiteSpace(msg))
+                        messages.Add(msg.Trim());
 
+                    text = text.Substring(fsIndex + 1); // FS sonrası kalan
+                }
+
+                // 2) Kalan kısımda CR/LF ile biten satırları çek
+                // Son newline pozisyonunu bul (tamamlanmış satırlar)
+                int lastNl = Math.Max(text.LastIndexOf('\n'), text.LastIndexOf('\r'));
+
+                if (lastNl >= 0)
+                {
+                    var completedBlock = text.Substring(0, lastNl + 1);
+                    var remaining = text.Substring(lastNl + 1);
+
+                    var parts = completedBlock.Split(
+                        new[] { "\r\n", "\n", "\r" },
+                        StringSplitOptions.RemoveEmptyEntries
+                    );
+
+                    foreach (var p in parts)
+                    {
+                        var line = p.Trim();
+                        if (!string.IsNullOrEmpty(line))
+                            messages.Add(line);
+                    }
+
+                    text = remaining;
+                }
+
+                // 3) Buffer'ı sadece tamamlanmamış kalanla güncelle
                 _serialBuffer.Clear();
-                if (!text.EndsWith("\n") && !text.EndsWith("\r"))
-                {
-                    _serialBuffer.Append(trailing);
-                }
-                else if (!string.IsNullOrWhiteSpace(trailing))
-                {
-                    messages.Add(trailing.Trim());
-                }
-
-                for (int i = 0; i < parts.Length - 1; i++)
-                {
-                    var message = parts[i].Trim();
-                    if (!string.IsNullOrEmpty(message))
-                        messages.Add(message);
-                }
+                if (!string.IsNullOrEmpty(text))
+                    _serialBuffer.Append(text);
             }
 
             return messages;
@@ -630,7 +743,7 @@ namespace BaylanModemTest
 
         private void LockSettings(bool locked)
         {
-            grpConnection.Enabled = !locked;
+            //grpConnection.Enabled = !locked;
 
             btnStart.Enabled = !locked;
             btnStop.Enabled = true;
