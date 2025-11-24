@@ -150,11 +150,26 @@ namespace BaylanModemTest
                     return false;
                 }
             }
-
+            Thread.Sleep(2000);
             return true;
         }
 
         // ====== Command Maps (dummy) ======
+        string relayCmd =
+    "#\x1C" +
+    "#\x1D" +
+    "#\x1F" +
+    "QTYPE:RELAY_PROCESS$\x1F$\x1D" +
+    "#\x1E" +
+    "#\x1F" +
+    "OADUN:admin$\x1F" +
+    "#\x1F" +
+    "OADPW:12345678$\x1F" +
+    "#\x1F" +
+    "RNP01:1$\x1F$\x1D" +
+    "#\x1F" +
+    "QANSD:3$\x1F$\x1E$" +
+    "\x1C";
 
         private List<string> GetStepTxCommands(int stepNo)
         {
@@ -164,7 +179,7 @@ namespace BaylanModemTest
                     return new List<string> { "QCK_RESET_OSOS\r\n" };
 
                 case 2:
-                    return new List<string> { "AT+RELAY=ON\r\n", "AT+RELAY=OFF\r\n" };
+                    return new List<string> { relayCmd, "AT+RELAY=OFF\r\n" };
 
                 case 3:
                     return new List<string> { "AT+INPUT?\r\n" };
@@ -401,7 +416,7 @@ namespace BaylanModemTest
 
             _listenerCts = CancellationTokenSource.CreateLinkedTokenSource(ct);
 
-            _tcpListenerTask = Task.Run(() => ListenTcpAsync(_listenerCts.Token), ct);
+            //_tcpListenerTask = Task.Run(() => ListenTcpAsync(_listenerCts.Token), ct);
         }
 
         private async Task<string> SendAndReceiveAsync(string cmd, StepExpectation expectation, CancellationToken ct)
@@ -572,7 +587,7 @@ namespace BaylanModemTest
             grpConnection.Enabled = !locked;
 
             btnStart.Enabled = !locked;
-            btnStop.Enabled = locked;
+            btnStop.Enabled = true;
         }
 
         private void ResetUi()
