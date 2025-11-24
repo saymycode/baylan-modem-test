@@ -49,6 +49,8 @@ namespace BaylanModemTest
             this.numPushPort = new System.Windows.Forms.NumericUpDown();
             this.lblPullPort = new System.Windows.Forms.Label();
             this.numPullPort = new System.Windows.Forms.NumericUpDown();
+            this.lblMeterSerial = new System.Windows.Forms.Label();
+            this.txtMeterSerial = new System.Windows.Forms.TextBox();
             this.startStopLayout = new System.Windows.Forms.TableLayoutPanel();
             this.btnStart = new System.Windows.Forms.Button();
             this.btnStop = new System.Windows.Forms.Button();
@@ -74,9 +76,6 @@ namespace BaylanModemTest
             this.lblStep1Name = new System.Windows.Forms.Label();
             this.pnlStep1Led = new System.Windows.Forms.Panel();
             this.stepsLayout = new System.Windows.Forms.TableLayoutPanel();
-            this.lblStep6Status = new System.Windows.Forms.Label();
-            this.pnlStep6Led = new System.Windows.Forms.Panel();
-            this.lblStep6Name = new System.Windows.Forms.Label();
             this.mainLayout.SuspendLayout();
             this.grpConnection.SuspendLayout();
             this.connectionLayout.SuspendLayout();
@@ -286,20 +285,23 @@ namespace BaylanModemTest
             this.tcpLayout.Controls.Add(this.numPushPort, 1, 1);
             this.tcpLayout.Controls.Add(this.lblPullPort, 0, 2);
             this.tcpLayout.Controls.Add(this.numPullPort, 1, 2);
-            this.tcpLayout.Controls.Add(this.startStopLayout, 1, 3);
-            this.tcpLayout.Controls.Add(this.overallProgress, 1, 4);
-            this.tcpLayout.Controls.Add(this.lblCurrentStep, 1, 5);
+            this.tcpLayout.Controls.Add(this.lblMeterSerial, 0, 3);
+            this.tcpLayout.Controls.Add(this.txtMeterSerial, 1, 3);
+            this.tcpLayout.Controls.Add(this.startStopLayout, 1, 4);
+            this.tcpLayout.Controls.Add(this.overallProgress, 1, 5);
+            this.tcpLayout.Controls.Add(this.lblCurrentStep, 1, 6);
             this.tcpLayout.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tcpLayout.Location = new System.Drawing.Point(584, 4);
             this.tcpLayout.Margin = new System.Windows.Forms.Padding(4);
             this.tcpLayout.Name = "tcpLayout";
-            this.tcpLayout.RowCount = 6;
-            this.tcpLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 35F));
-            this.tcpLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 35F));
-            this.tcpLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 35F));
-            this.tcpLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 70F));
-            this.tcpLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 34F));
-            this.tcpLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 35F));
+            this.tcpLayout.RowCount = 7;
+            this.tcpLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 14F));
+            this.tcpLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 14F));
+            this.tcpLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 14F));
+            this.tcpLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 14F));
+            this.tcpLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 20F));
+            this.tcpLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 12F));
+            this.tcpLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 12F));
             this.tcpLayout.Size = new System.Drawing.Size(572, 209);
             this.tcpLayout.TabIndex = 1;
             // 
@@ -390,9 +392,29 @@ namespace BaylanModemTest
             0,
             0,
             0});
-            // 
+            //
+            // lblMeterSerial
+            //
+            this.lblMeterSerial.AutoSize = true;
+            this.lblMeterSerial.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.lblMeterSerial.Location = new System.Drawing.Point(3, 105);
+            this.lblMeterSerial.Name = "lblMeterSerial";
+            this.lblMeterSerial.Size = new System.Drawing.Size(169, 35);
+            this.lblMeterSerial.TabIndex = 6;
+            this.lblMeterSerial.Text = "Sayaç Seri Numarası";
+            this.lblMeterSerial.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            //
+            // txtMeterSerial
+            //
+            this.txtMeterSerial.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.txtMeterSerial.Location = new System.Drawing.Point(178, 108);
+            this.txtMeterSerial.Name = "txtMeterSerial";
+            this.txtMeterSerial.Size = new System.Drawing.Size(391, 27);
+            this.txtMeterSerial.TabIndex = 7;
+            this.txtMeterSerial.Text = "00112233";
+            //
             // startStopLayout
-            // 
+            //
             this.startStopLayout.ColumnCount = 2;
             this.startStopLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.startStopLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
@@ -689,64 +711,26 @@ namespace BaylanModemTest
             this.stepsLayout.Controls.Add(this.pnlStep5Led, 0, 1);
             this.stepsLayout.Controls.Add(this.lblStep5Name, 1, 1);
             this.stepsLayout.Controls.Add(this.lblStep5Status, 2, 1);
-            this.stepsLayout.Controls.Add(this.pnlStep6Led, 0, 2);
-            this.stepsLayout.Controls.Add(this.lblStep6Name, 1, 2);
-            this.stepsLayout.Controls.Add(this.lblStep6Status, 2, 2);
-            this.stepsLayout.Controls.Add(this.pnlStep3Led, 0, 3);
-            this.stepsLayout.Controls.Add(this.lblStep3Name, 1, 3);
-            this.stepsLayout.Controls.Add(this.lblStep3Status, 2, 3);
-            this.stepsLayout.Controls.Add(this.pnlStep4Led, 0, 4);
-            this.stepsLayout.Controls.Add(this.lblStep4Name, 1, 4);
-            this.stepsLayout.Controls.Add(this.lblStep4Status, 2, 4);
-            this.stepsLayout.Controls.Add(this.pnlStep7Led, 0, 5);
-            this.stepsLayout.Controls.Add(this.lblStep7Name, 1, 5);
-            this.stepsLayout.Controls.Add(this.lblStep7Status, 2, 5);
+            this.stepsLayout.Controls.Add(this.pnlStep3Led, 0, 2);
+            this.stepsLayout.Controls.Add(this.lblStep3Name, 1, 2);
+            this.stepsLayout.Controls.Add(this.lblStep3Status, 2, 2);
+            this.stepsLayout.Controls.Add(this.pnlStep4Led, 0, 3);
+            this.stepsLayout.Controls.Add(this.lblStep4Name, 1, 3);
+            this.stepsLayout.Controls.Add(this.lblStep4Status, 2, 3);
+            this.stepsLayout.Controls.Add(this.pnlStep7Led, 0, 4);
+            this.stepsLayout.Controls.Add(this.lblStep7Name, 1, 4);
+            this.stepsLayout.Controls.Add(this.lblStep7Status, 2, 4);
             this.stepsLayout.Dock = System.Windows.Forms.DockStyle.Top;
             this.stepsLayout.Location = new System.Drawing.Point(10, 30);
             this.stepsLayout.Name = "stepsLayout";
-            this.stepsLayout.RowCount = 6;
+            this.stepsLayout.RowCount = 5;
             this.stepsLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 60F));
             this.stepsLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 60F));
             this.stepsLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 60F));
             this.stepsLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 60F));
             this.stepsLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 60F));
-            this.stepsLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 60F));
-            this.stepsLayout.Size = new System.Drawing.Size(682, 365);
+            this.stepsLayout.Size = new System.Drawing.Size(682, 305);
             this.stepsLayout.TabIndex = 0;
-            // 
-            // lblStep6Status
-            // 
-            this.lblStep6Status.AutoSize = true;
-            this.lblStep6Status.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.lblStep6Status.Location = new System.Drawing.Point(545, 120);
-            this.lblStep6Status.Name = "lblStep6Status";
-            this.lblStep6Status.Size = new System.Drawing.Size(134, 60);
-            this.lblStep6Status.TabIndex = 17;
-            this.lblStep6Status.Text = "Bekliyor";
-            this.lblStep6Status.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // pnlStep6Led
-            // 
-            this.pnlStep6Led.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.pnlStep6Led.BackColor = System.Drawing.Color.DimGray;
-            this.pnlStep6Led.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.pnlStep6Led.Location = new System.Drawing.Point(3, 126);
-            this.pnlStep6Led.Margin = new System.Windows.Forms.Padding(3, 6, 3, 6);
-            this.pnlStep6Led.Name = "pnlStep6Led";
-            this.pnlStep6Led.Size = new System.Drawing.Size(54, 48);
-            this.pnlStep6Led.TabIndex = 15;
-            // 
-            // lblStep6Name
-            // 
-            this.lblStep6Name.AutoSize = true;
-            this.lblStep6Name.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.lblStep6Name.Font = new System.Drawing.Font("Segoe UI", 14.25F, System.Drawing.FontStyle.Bold);
-            this.lblStep6Name.Location = new System.Drawing.Point(63, 120);
-            this.lblStep6Name.Name = "lblStep6Name";
-            this.lblStep6Name.Size = new System.Drawing.Size(476, 60);
-            this.lblStep6Name.TabIndex = 16;
-            this.lblStep6Name.Text = "Input Testi";
-            this.lblStep6Name.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // FrmModemTest
             // 
@@ -804,6 +788,8 @@ namespace BaylanModemTest
         private System.Windows.Forms.NumericUpDown numPushPort;
         private System.Windows.Forms.Label lblPullPort;
         private System.Windows.Forms.NumericUpDown numPullPort;
+        private System.Windows.Forms.Label lblMeterSerial;
+        private System.Windows.Forms.TextBox txtMeterSerial;
         private System.Windows.Forms.TableLayoutPanel middleLayout;
         private System.Windows.Forms.GroupBox grpSteps;
         private System.Windows.Forms.Button btnStart;
@@ -820,9 +806,6 @@ namespace BaylanModemTest
         private System.Windows.Forms.Panel pnlStep5Led;
         private System.Windows.Forms.Label lblStep5Name;
         private System.Windows.Forms.Label lblStep5Status;
-        private System.Windows.Forms.Panel pnlStep6Led;
-        private System.Windows.Forms.Label lblStep6Name;
-        private System.Windows.Forms.Label lblStep6Status;
         private System.Windows.Forms.Panel pnlStep3Led;
         private System.Windows.Forms.Label lblStep3Name;
         private System.Windows.Forms.Label lblStep3Status;

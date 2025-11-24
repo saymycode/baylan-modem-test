@@ -58,10 +58,9 @@ namespace BaylanModemTest
             {
                 new TestStep(1, "Uyanma Testi", pnlStep1Led, lblStep1Status),
                 new TestStep(2, "Röle Testi", pnlStep5Led, lblStep5Status),
-                new TestStep(3, "Input Testi", pnlStep6Led, lblStep6Status),
-                new TestStep(4, "Sayaç Ekleme Testi", pnlStep3Led, lblStep3Status),
-                new TestStep(5, "Sayaç Okuma Testi", pnlStep4Led, lblStep4Status),
-                new TestStep(6, "Finalize Testi", pnlStep7Led, lblStep7Status),
+                new TestStep(3, "Sayaç Ekleme Testi", pnlStep3Led, lblStep3Status),
+                new TestStep(4, "Sayaç Okuma Testi", pnlStep4Led, lblStep4Status),
+                new TestStep(5, "Finalize Testi", pnlStep7Led, lblStep7Status),
             };
 
             ResetUi();
@@ -137,11 +136,13 @@ namespace BaylanModemTest
         {
             public string Cmd { get; set; }
             public StepExpectation Expectation { get; set; }
+            public bool UseTcp { get; set; }
 
-            public StepCommandPlanItem(string cmd, StepExpectation exp)
+            public StepCommandPlanItem(string cmd, StepExpectation exp, bool useTcp = false)
             {
                 Cmd = cmd;
                 Expectation = exp;
+                UseTcp = useTcp;
             }
         }
 
@@ -157,7 +158,9 @@ namespace BaylanModemTest
                 ct.ThrowIfCancellationRequested();
 
                 LogTx(item.Cmd);
-                string rx = await SendAndReceiveAsync(item.Cmd, item.Expectation, ct);
+                string rx = item.UseTcp
+                    ? await SendAndReceiveTcpAsync(item.Cmd, item.Expectation, ct)
+                    : await SendAndReceiveAsync(item.Cmd, item.Expectation, ct);
 
                 string error;
                 if (!ValidateRx(rx, item.Expectation, out error))
@@ -196,45 +199,37 @@ namespace BaylanModemTest
                 )
             };
 
-                case 3: // Input (dummy)
+                case 3: // Sayaç ekleme (TCP)
+                    var meterSerialToAdd = GetMeterSerialNumber();
                     return new List<StepCommandPlanItem>
             {
                 new StepCommandPlanItem(
-                    "AT+INPUT?\r\n",
-                    new StepExpectation("INPUTOK", new Dictionary<string, string>
-                    {
-                        {"INPUT", "HIGH"}
-                    })
-                )
-            };
-
-                case 4: // Sayaç ekleme (dummy)
-                    return new List<StepCommandPlanItem>
-            {
-                new StepCommandPlanItem(
-                    "AT+MTRADD=00112233\r\n",
+                    BuildMeterAddCommand(meterSerialToAdd),
                     new StepExpectation("MTRADDED", new Dictionary<string, string>
                     {
                         {"RESULT", "OK"},
-                        {"METER", "00112233"}
-                    })
+                        {"METER", meterSerialToAdd}
+                    }),
+                    useTcp: true
                 )
             };
 
-                case 5: // Sayaç okuma (dummy)
+                case 4: // Sayaç okuma (TCP)
+                    var meterSerialToRead = GetMeterSerialNumber();
                     return new List<StepCommandPlanItem>
             {
                 new StepCommandPlanItem(
-                    "AT+MTRRD=00112233\r\n",
+                    BuildMeterReadCommand(meterSerialToRead),
                     new StepExpectation("MTRDATA", new Dictionary<string, string>
                     {
-                        {"METER", "00112233"},
+                        {"METER", meterSerialToRead},
                         {"STATUS", "OK"}
-                    })
+                    }),
+                    useTcp: true
                 )
             };
 
-                case 6: // Finalize (dummy)
+                case 5: // Finalize (dummy)
                     return new List<StepCommandPlanItem>
             {
                 new StepCommandPlanItem(
@@ -314,6 +309,26 @@ namespace BaylanModemTest
                    "\x1C";
         }
 
+        private string BuildMeterAddCommand(string meterSerial)
+        {
+            return $"AT+MTRADD={meterSerial}\r\n";
+        }
+
+        private string BuildMeterReadCommand(string meterSerial)
+        {
+            return $"AT+MTRRD={meterSerial}\r\n";
+        }
+
+        private string GetMeterSerialNumber()
+        {
+            var serial = txtMeterSerial.Text?.Trim();
+
+            if (string.IsNullOrWhiteSpace(serial))
+                throw new InvalidOperationException("Sayaç seri numarası boş olamaz.");
+
+            return serial.ToUpperInvariant();
+        }
+
         private List<string> GetStepTxCommands(int stepNo)
         {
             switch (stepNo)
@@ -321,16 +336,7 @@ namespace BaylanModemTest
                 case 1:
                     return new List<string> { "QCK_RESET_OSOS\r\n" };
 
-                case 3:
-                    return new List<string> { "AT+INPUT?\r\n" };
-
-                case 4:
-                    return new List<string> { "AT+MTRADD=00112233\r\n" };
-
                 case 5:
-                    return new List<string> { "AT+MTRRD=00112233\r\n" };
-
-                case 6:
                     return new List<string> { "AT+FIN\r\n" };
 
                 default:
@@ -351,27 +357,7 @@ namespace BaylanModemTest
                         {"RELAY", "CLOSED"}
                     });
 
-                case 3:
-                    return new StepExpectation("INPUTOK", new Dictionary<string, string>
-                    {
-                        {"INPUT", "HIGH"}
-                    });
-
-                case 4:
-                    return new StepExpectation("MTRADDED", new Dictionary<string, string>
-                    {
-                        {"RESULT", "OK"},
-                        {"METER", "00112233"}
-                    });
-
                 case 5:
-                    return new StepExpectation("MTRDATA", new Dictionary<string, string>
-                    {
-                        {"METER", "00112233"},
-                        {"STATUS", "OK"}
-                    });
-
-                case 6:
                     return new StepExpectation("FINOK", new Dictionary<string, string>
                     {
                         {"STATUS", "OK"}
@@ -576,6 +562,20 @@ namespace BaylanModemTest
             _listenerCts = CancellationTokenSource.CreateLinkedTokenSource(ct);
 
             //_tcpListenerTask = Task.Run(() => ListenTcpAsync(_listenerCts.Token), ct);
+
+            var ipText = txtTcpIp.Text?.Trim();
+            if (string.IsNullOrWhiteSpace(ipText))
+                throw new InvalidOperationException("TCP IP boş olamaz.");
+
+            var ip = IPAddress.Parse(ipText);
+
+            _tcpPush = new TcpClient();
+            await _tcpPush.ConnectAsync(ip, (int)numPushPort.Value);
+            LogInfo($"TCP Push bağlantısı açıldı ({ip}:{numPushPort.Value}).");
+
+            _tcpPull = new TcpClient();
+            await _tcpPull.ConnectAsync(ip, (int)numPullPort.Value);
+            LogInfo($"TCP Pull bağlantısı açıldı ({ip}:{numPullPort.Value}).");
         }
 
         private async Task<string> SendAndReceiveAsync(string cmd, StepExpectation expectation, CancellationToken ct)
@@ -590,6 +590,21 @@ namespace BaylanModemTest
             _serial.Write(cmd);
 
             return await WaitForExpectedResponseAsync(ct);
+        }
+
+        private async Task<string> SendAndReceiveTcpAsync(string cmd, StepExpectation expectation, CancellationToken ct)
+        {
+            if (_tcpPush == null || !_tcpPush.Connected || _tcpPull == null || !_tcpPull.Connected)
+                throw new InvalidOperationException("TCP bağlantıları hazır değil.");
+
+            ClearIncomingMessages();
+
+            PrepareForExpectedResponse(expectation);
+
+            var buffer = Encoding.ASCII.GetBytes(cmd);
+            await _tcpPush.GetStream().WriteAsync(buffer, 0, buffer.Length, ct);
+
+            return await WaitForExpectedTcpResponseAsync(ct);
         }
 
         private async Task ListenTcpAsync(CancellationToken token)
@@ -672,6 +687,39 @@ namespace BaylanModemTest
             }
 
             throw new TimeoutException("3 dakika içinde beklenen cevap alınamadı.");
+        }
+
+        private async Task<string> WaitForExpectedTcpResponseAsync(CancellationToken ct)
+        {
+            if (_pendingSerialResponse == null)
+                throw new InvalidOperationException("Beklenen bir TCP cevabı yok.");
+
+            var buffer = new byte[4096];
+            var deadline = DateTime.UtcNow.AddMinutes(3);
+            var stream = _tcpPull.GetStream();
+
+            while (DateTime.UtcNow < deadline)
+            {
+                ct.ThrowIfCancellationRequested();
+
+                if (stream.DataAvailable)
+                {
+                    var read = await stream.ReadAsync(buffer, 0, buffer.Length, ct);
+                    if (read > 0)
+                    {
+                        var text = Encoding.ASCII.GetString(buffer, 0, read);
+                        LogRx(text);
+                        TryCompletePending(text);
+
+                        if (_pendingSerialResponse.Task.IsCompleted)
+                            return await _pendingSerialResponse.Task;
+                    }
+                }
+
+                await Task.Delay(100, ct);
+            }
+
+            throw new TimeoutException("3 dakika içinde beklenen TCP cevap alınamadı.");
         }
 
         private void PrepareForExpectedResponse(StepExpectation expectation)
