@@ -1,8 +1,10 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO.Ports;
 using System.Linq;
+using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
@@ -15,8 +17,14 @@ namespace BaylanModemTest
     {
         private CancellationTokenSource _cts;
         private SerialPort _serial;
+        private TcpListener _tcpListener;
         private TcpClient _tcpPush;
         private TcpClient _tcpPull;
+        private Task _tcpListenerTask;
+        private Task _comListenerTask;
+        private CancellationTokenSource _listenerCts;
+
+        private readonly ConcurrentQueue<string> _incomingMessages = new ConcurrentQueue<string>();
 
 
         private readonly List<TestStep> _steps;
@@ -43,12 +51,11 @@ namespace BaylanModemTest
             _steps = new List<TestStep>
             {
                 new TestStep(1, "Uyanma Testi", pnlStep1Led, lblStep1Status),
-                new TestStep(2, "Reset Testi", pnlStep2Led, lblStep2Status),
-                new TestStep(3, "Sayaç Ekleme Testi", pnlStep3Led, lblStep3Status),
-                new TestStep(4, "Sayaç Okuma Testi", pnlStep4Led, lblStep4Status),
-                new TestStep(5, "Röle Testi", pnlStep5Led, lblStep5Status),
-                new TestStep(6, "Input Testi", pnlStep6Led, lblStep6Status),
-                new TestStep(7, "Finalize Testi", pnlStep7Led, lblStep7Status),
+                new TestStep(2, "Sayaç Ekleme Testi", pnlStep3Led, lblStep3Status),
+                new TestStep(3, "Sayaç Okuma Testi", pnlStep4Led, lblStep4Status),
+                new TestStep(4, "Röle Testi", pnlStep5Led, lblStep5Status),
+                new TestStep(5, "Input Testi", pnlStep6Led, lblStep6Status),
+                new TestStep(6, "Finalize Testi", pnlStep7Led, lblStep7Status),
             };
 
             ResetUi();
@@ -129,13 +136,7 @@ namespace BaylanModemTest
                 ct.ThrowIfCancellationRequested();
 
                 LogTx(cmd);
-                string rx;
-
-
-                rx = await SendAndReceiveAsync(cmd, ct);
-
-
-                LogRx(rx);
+                string rx = await SendAndReceiveAsync(cmd, expectedRx, ct);
 
                 if (!ValidateRx(rx, expectedRx, out var error))
                 {
@@ -157,21 +158,18 @@ namespace BaylanModemTest
                     return new List<string> { "QCK_RESET_OSOS\r\n" };
 
                 case 2:
-                    return new List<string> { "AT+RST\r\n" };
-
-                case 3:
                     return new List<string> { "AT+MTRADD=00112233\r\n" };
 
-                case 4:
+                case 3:
                     return new List<string> { "AT+MTRRD=00112233\r\n" };
 
-                case 5:
+                case 4:
                     return new List<string> { "AT+RELAY=ON\r\n", "AT+RELAY=OFF\r\n" };
 
-                case 6:
+                case 5:
                     return new List<string> { "AT+INPUT?\r\n" };
 
-                case 7:
+                case 6:
                     return new List<string> { "AT+FIN\r\n" };
 
                 default:
@@ -184,36 +182,35 @@ namespace BaylanModemTest
             switch (stepNo)
             {
                 case 1:
-                case 2:
                     return new StepExpectation("OK");
 
-                case 3:
+                case 2:
                     return new StepExpectation("MTRADDED", new Dictionary<string, string>
                     {
                         {"RESULT", "OK"},
                         {"METER", "00112233"}
                     });
 
-                case 4:
+                case 3:
                     return new StepExpectation("MTRDATA", new Dictionary<string, string>
                     {
                         {"METER", "00112233"},
                         {"STATUS", "OK"}
                     });
 
-                case 5:
+                case 4:
                     return new StepExpectation("RELAYOK", new Dictionary<string, string>
                     {
                         {"RELAY", "CLOSED"}
                     });
 
-                case 6:
+                case 5:
                     return new StepExpectation("INPUTOK", new Dictionary<string, string>
                     {
                         {"INPUT", "HIGH"}
                     });
 
-                case 7:
+                case 6:
                     return new StepExpectation("FINOK", new Dictionary<string, string>
                     {
                         {"STATUS", "OK"}
@@ -310,46 +307,142 @@ namespace BaylanModemTest
                 (StopBits)Enum.Parse(typeof(StopBits), cmbStopBits.Text)
             )
             {
-                ReadTimeout = 3000,
-                WriteTimeout = 3000
+                ReadTimeout = 180000,
+                WriteTimeout = 180000
             };
 
             _serial.Open();
             LogInfo("COM açıldı.");
+
+            _listenerCts = CancellationTokenSource.CreateLinkedTokenSource(ct);
+
+            _comListenerTask = Task.Run(() => ListenSerialAsync(_listenerCts.Token), ct);
+            _tcpListenerTask = Task.Run(() => ListenTcpAsync(_listenerCts.Token), ct);
         }
 
 
 
-        private async Task<string> SendAndReceiveAsync(string cmd, CancellationToken ct)
+        private async Task<string> SendAndReceiveAsync(string cmd, StepExpectation expectation, CancellationToken ct)
         {
             if (_serial == null || !_serial.IsOpen)
                 throw new InvalidOperationException("COM açık değil.");
 
             _serial.Write(cmd);
 
-            // Basit okuma; gerçek protokolün framing’ine göre değiştir
-            return await Task.Run(() =>
+            ClearIncomingMessages();
+
+            return await WaitForExpectedResponseAsync(expectation, ct);
+        }
+
+        private async Task ListenSerialAsync(CancellationToken token)
+        {
+            while (!token.IsCancellationRequested)
             {
-                var sb = new StringBuilder();
-                var start = DateTime.UtcNow;
-                while ((DateTime.UtcNow - start).TotalMilliseconds < 3000)
+                try
                 {
-                    ct.ThrowIfCancellationRequested();
-                    try
+                    if (_serial != null && _serial.IsOpen)
                     {
                         var chunk = _serial.ReadExisting();
                         if (!string.IsNullOrEmpty(chunk))
                         {
-                            sb.Append(chunk);
-                            if (sb.ToString().Contains("\n") || sb.ToString().Contains("OK"))
-                                break;
+                            _incomingMessages.Enqueue(chunk);
+                            LogRx(chunk);
                         }
                     }
-                    catch { /* timeout ignore */ }
-                    Thread.Sleep(30);
                 }
-                return sb.ToString();
-            }, ct);
+                catch (Exception ex)
+                {
+                    LogError($"COM dinleyicide hata: {ex.Message}");
+                }
+
+                await Task.Delay(50, token);
+            }
+        }
+
+        private async Task ListenTcpAsync(CancellationToken token)
+        {
+            try
+            {
+                _tcpListener = new TcpListener(IPAddress.Any, 4444);
+                _tcpListener.Start();
+                LogInfo("TCP dinleyici 4444 portunda başlatıldı.");
+
+                while (!token.IsCancellationRequested)
+                {
+                    var acceptTask = _tcpListener.AcceptTcpClientAsync();
+                    var completed = await Task.WhenAny(acceptTask, Task.Delay(100, token));
+                    if (completed != acceptTask)
+                        continue;
+
+                    var client = acceptTask.Result;
+                    _ = Task.Run(() => HandleTcpClientAsync(client, token), token);
+                }
+            }
+            catch (Exception ex)
+            {
+                if (!token.IsCancellationRequested)
+                    LogError($"TCP dinleyici hatası: {ex.Message}");
+            }
+        }
+
+        private async Task HandleTcpClientAsync(TcpClient client, CancellationToken token)
+        {
+            using (client)
+            {
+                try
+                {
+                    var buffer = new byte[4096];
+                    using (var stream = client.GetStream())
+                    {
+                        while (!token.IsCancellationRequested && client.Connected)
+                        {
+                            if (!stream.DataAvailable)
+                            {
+                                await Task.Delay(50, token);
+                                continue;
+                            }
+
+                            var read = await stream.ReadAsync(buffer, 0, buffer.Length, token);
+                            if (read <= 0)
+                                break;
+
+                            var text = Encoding.UTF8.GetString(buffer, 0, read);
+                            _incomingMessages.Enqueue(text);
+                            LogRx(text);
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    if (!token.IsCancellationRequested)
+                        LogError($"TCP istemci hatası: {ex.Message}");
+                }
+            }
+        }
+
+        private async Task<string> WaitForExpectedResponseAsync(StepExpectation expectation, CancellationToken ct)
+        {
+            var deadline = DateTime.UtcNow.AddMinutes(3);
+
+            while (DateTime.UtcNow < deadline)
+            {
+                ct.ThrowIfCancellationRequested();
+
+                if (_incomingMessages.TryDequeue(out var message))
+                {
+                    if (ValidateRx(message, expectation, out _))
+                        return message;
+                }
+
+                await Task.Delay(100, ct);
+            }
+
+            throw new TimeoutException("3 dakika içinde beklenen cevap alınamadı.");
+        }
+
+        private void ClearIncomingMessages()
+        {
+            while (_incomingMessages.TryDequeue(out _)) { }
         }
 
 
@@ -358,10 +451,19 @@ namespace BaylanModemTest
             _cts?.Cancel();
             _cts = null;
 
+            try { _listenerCts?.Cancel(); } catch { }
+            try { _tcpListener?.Stop(); } catch { }
+            try { _tcpListenerTask?.Wait(500); } catch { }
+            try { _comListenerTask?.Wait(500); } catch { }
+
             try { _serial?.Close(); } catch { }
             try { _tcpPush?.Close(); } catch { }
             try { _tcpPull?.Close(); } catch { }
 
+            _listenerCts = null;
+            _tcpListener = null;
+            _tcpListenerTask = null;
+            _comListenerTask = null;
             _serial = null; _tcpPush = null; _tcpPull = null;
 
             LockSettings(false);
