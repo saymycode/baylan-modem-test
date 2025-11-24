@@ -133,6 +133,9 @@ namespace BaylanModemTest
 
         private async Task<bool> RunStepAsync(TestStep step, CancellationToken ct)
         {
+            if (step.Number == 2)
+                return await RunRelayStepAsync(ct);
+
             // Her adım için dummy/gerçek komut seti burada
             var txCommands = GetStepTxCommands(step.Number);
             var expectedRx = GetStepExpectation(step.Number);
@@ -154,22 +157,68 @@ namespace BaylanModemTest
             return true;
         }
 
+        private async Task<bool> RunRelayStepAsync(CancellationToken ct)
+        {
+            var relayOnCmd = BuildRelayCommand(1);
+            var relayOffCmd = BuildRelayCommand(0);
+
+            var initialExpectation = new StepExpectation("RPS01:");
+
+            ct.ThrowIfCancellationRequested();
+            LogTx(relayOnCmd);
+            var relayOnResponse = await SendAndReceiveAsync(relayOnCmd, initialExpectation, ct);
+
+            if (IsRelayOn(relayOnResponse))
+            {
+                LogInfo("Röle 1 ON doğrulandı, OFF komutu gönderiliyor.");
+                var offExpectation = new StepExpectation("RPS01:0");
+
+                ct.ThrowIfCancellationRequested();
+                LogTx(relayOffCmd);
+                var relayOffResponse = await SendAndReceiveAsync(relayOffCmd, offExpectation, ct);
+
+                if (IsRelayOff(relayOffResponse))
+                    return true;
+
+                LogError("Röle 1 OFF beklenirken farklı cevap alındı.");
+                return false;
+            }
+
+            if (IsRelayOff(relayOnResponse))
+                return true;
+
+            LogError("Röle 1 durumu doğrulanamadı.");
+            return false;
+        }
+
+        private bool IsRelayOn(string response)
+        {
+            return response?.IndexOf("RPS01:1", StringComparison.OrdinalIgnoreCase) >= 0;
+        }
+
+        private bool IsRelayOff(string response)
+        {
+            return response?.IndexOf("RPS01:0", StringComparison.OrdinalIgnoreCase) >= 0;
+        }
+
         // ====== Command Maps (dummy) ======
-        string relayCmd =
-    "#\x1C" +
-    "#\x1D" +
-    "#\x1F" +
-    "QTYPE:RELAY_PROCESS$\x1F$\x1D" +
-    "#\x1E" +
-    "#\x1F" +
-    "OADUN:admin$\x1F" +
-    "#\x1F" +
-    "OADPW:12345678$\x1F" +
-    "#\x1F" +
-    "RNP01:1$\x1F$\x1D" +
-    "#\x1F" +
-    "QANSD:3$\x1F$\x1E$" +
-    "\x1C";
+        private string BuildRelayCommand(int targetState)
+        {
+            return "#\x1C" +
+                   "#\x1D" +
+                   "#\x1F" +
+                   "QTYPE:RELAY_PROCESS$\x1F$\x1D" +
+                   "#\x1E" +
+                   "#\x1F" +
+                   "OADUN:admin$\x1F" +
+                   "#\x1F" +
+                   "OADPW:12345678$\x1F" +
+                   "#\x1F" +
+                   $"RNP01:{targetState}$\x1F$\x1D" +
+                   "#\x1F" +
+                   "QANSD:3$\x1F$\x1E$" +
+                   "\x1C";
+        }
 
         private List<string> GetStepTxCommands(int stepNo)
         {
@@ -177,9 +226,6 @@ namespace BaylanModemTest
             {
                 case 1:
                     return new List<string> { "QCK_RESET_OSOS\r\n" };
-
-                case 2:
-                    return new List<string> { relayCmd, "AT+RELAY=OFF\r\n" };
 
                 case 3:
                     return new List<string> { "AT+INPUT?\r\n" };
