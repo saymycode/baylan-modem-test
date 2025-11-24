@@ -51,10 +51,10 @@ namespace BaylanModemTest
             _steps = new List<TestStep>
             {
                 new TestStep(1, "Uyanma Testi", pnlStep1Led, lblStep1Status),
-                new TestStep(2, "Sayaç Ekleme Testi", pnlStep3Led, lblStep3Status),
-                new TestStep(3, "Sayaç Okuma Testi", pnlStep4Led, lblStep4Status),
-                new TestStep(4, "Röle Testi", pnlStep5Led, lblStep5Status),
-                new TestStep(5, "Input Testi", pnlStep6Led, lblStep6Status),
+                new TestStep(2, "Röle Testi", pnlStep5Led, lblStep5Status),
+                new TestStep(3, "Input Testi", pnlStep6Led, lblStep6Status),
+                new TestStep(4, "Sayaç Ekleme Testi", pnlStep3Led, lblStep3Status),
+                new TestStep(5, "Sayaç Okuma Testi", pnlStep4Led, lblStep4Status),
                 new TestStep(6, "Finalize Testi", pnlStep7Led, lblStep7Status),
             };
 
@@ -158,16 +158,16 @@ namespace BaylanModemTest
                     return new List<string> { "QCK_RESET_OSOS\r\n" };
 
                 case 2:
-                    return new List<string> { "AT+MTRADD=00112233\r\n" };
-
-                case 3:
-                    return new List<string> { "AT+MTRRD=00112233\r\n" };
-
-                case 4:
                     return new List<string> { "AT+RELAY=ON\r\n", "AT+RELAY=OFF\r\n" };
 
-                case 5:
+                case 3:
                     return new List<string> { "AT+INPUT?\r\n" };
+
+                case 4:
+                    return new List<string> { "AT+MTRADD=00112233\r\n" };
+
+                case 5:
+                    return new List<string> { "AT+MTRRD=00112233\r\n" };
 
                 case 6:
                     return new List<string> { "AT+FIN\r\n" };
@@ -182,32 +182,32 @@ namespace BaylanModemTest
             switch (stepNo)
             {
                 case 1:
-                    return new StepExpectation("OK");
+                    return new StepExpectation("FREE");
 
                 case 2:
+                    return new StepExpectation("RELAYOK", new Dictionary<string, string>
+                    {
+                        {"RELAY", "CLOSED"}
+                    });
+
+                case 3:
+                    return new StepExpectation("INPUTOK", new Dictionary<string, string>
+                    {
+                        {"INPUT", "HIGH"}
+                    });
+
+                case 4:
                     return new StepExpectation("MTRADDED", new Dictionary<string, string>
                     {
                         {"RESULT", "OK"},
                         {"METER", "00112233"}
                     });
 
-                case 3:
+                case 5:
                     return new StepExpectation("MTRDATA", new Dictionary<string, string>
                     {
                         {"METER", "00112233"},
                         {"STATUS", "OK"}
-                    });
-
-                case 4:
-                    return new StepExpectation("RELAYOK", new Dictionary<string, string>
-                    {
-                        {"RELAY", "CLOSED"}
-                    });
-
-                case 5:
-                    return new StepExpectation("INPUTOK", new Dictionary<string, string>
-                    {
-                        {"INPUT", "HIGH"}
                     });
 
                 case 6:
