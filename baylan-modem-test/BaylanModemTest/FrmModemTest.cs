@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO.Ports;
+using System.Linq;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
@@ -12,10 +13,11 @@ namespace BaylanModemTest
 {
     public partial class FrmModemTest : Form
     {
-        private CancellationTokenSource? _cts;
-        private SerialPort? _serial;
-        private TcpClient? _tcpPush;
-        private TcpClient? _tcpPull;
+        private CancellationTokenSource _cts;
+        private SerialPort _serial;
+        private TcpClient _tcpPush;
+        private TcpClient _tcpPull;
+
 
         private readonly List<TestStep> _steps;
 
@@ -28,7 +30,7 @@ namespace BaylanModemTest
             if (cmbComPort.Items.Count > 0) cmbComPort.SelectedIndex = 0;
 
             cmbBaudRate.Items.AddRange(new object[] { 9600, 19200, 38400, 57600, 115200 });
-            cmbBaudRate.SelectedIndex = 0;
+            cmbBaudRate.SelectedIndex = 3;
             cmbParity.Items.AddRange(Enum.GetNames(typeof(Parity)));
             cmbParity.SelectedItem = "None";
             cmbDataBits.Items.AddRange(new object[] { 7, 8 });
@@ -36,7 +38,6 @@ namespace BaylanModemTest
             cmbStopBits.Items.AddRange(Enum.GetNames(typeof(StopBits)));
             cmbStopBits.SelectedItem = "One";
 
-            chkAutoScrollLog.Checked = true;
 
             // Test adımları
             _steps = new List<TestStep>
@@ -75,8 +76,7 @@ namespace BaylanModemTest
             {
                 LogInfo("Test başladı.");
 
-                if (!chkUseDummy.Checked)
-                    await OpenConnectionsAsync(ct);
+                await OpenConnectionsAsync(ct);
 
                 for (int i = 0; i < _steps.Count; i++)
                 {
@@ -131,14 +131,9 @@ namespace BaylanModemTest
                 LogTx(cmd);
                 string rx;
 
-                if (chkUseDummy.Checked)
-                {
-                    rx = await GetDummyRxAsync(step.Number, ct);
-                }
-                else
-                {
-                    rx = await SendAndReceiveAsync(cmd, ct);
-                }
+
+                rx = await SendAndReceiveAsync(cmd, ct);
+
 
                 LogRx(rx);
 
@@ -151,48 +146,73 @@ namespace BaylanModemTest
 
         // ====== Command Maps (dummy) ======
 
-        private List<string> GetStepTxCommands(int stepNo) => stepNo switch
+        private List<string> GetStepTxCommands(int stepNo)
         {
-            1 => new() { "AT\r\n" },
-            2 => new() { "AT+RST\r\n" },
-            3 => new() { "AT+MTRADD=00112233\r\n" },
-            4 => new() { "AT+MTRRD=00112233\r\n" },
-            5 => new() { "AT+RELAY=ON\r\n", "AT+RELAY=OFF\r\n" },
-            6 => new() { "AT+INPUT?\r\n" },
-            7 => new() { "AT+FIN\r\n" },
-            _ => new()
-        };
+            switch (stepNo)
+            {
+                case 1:
+                    return new List<string> { "AT\r\n" };
 
-        private string GetStepExpectedRx(int stepNo) => stepNo switch
-        {
-            1 => "OK",
-            2 => "OK",
-            3 => "MTRADDED",
-            4 => "MTRDATA",
-            5 => "RELAYOK",
-            6 => "INPUTOK",
-            7 => "FINOK",
-            _ => "OK"
-        };
+                case 2:
+                    return new List<string> { "AT+RST\r\n" };
 
-        private async Task<string> GetDummyRxAsync(int stepNo, CancellationToken ct)
-        {
-            await Task.Delay(400, ct);
+                case 3:
+                    return new List<string> { "AT+MTRADD=00112233\r\n" };
 
-            // UI'daki dummy cevap alanından satır satır çek
-            // Basit: step bazlı tek satır bekle
-            var lines = txtDummyRx.Text.Split(new[] { "\r\n", "\n" }, StringSplitOptions.RemoveEmptyEntries);
-            if (lines.Length >= stepNo)
-                return lines[stepNo - 1];
+                case 4:
+                    return new List<string> { "AT+MTRRD=00112233\r\n" };
 
-            return GetStepExpectedRx(stepNo);
+                case 5:
+                    return new List<string> { "AT+RELAY=ON\r\n", "AT+RELAY=OFF\r\n" };
+
+                case 6:
+                    return new List<string> { "AT+INPUT?\r\n" };
+
+                case 7:
+                    return new List<string> { "AT+FIN\r\n" };
+
+                default:
+                    return new List<string>();
+            }
         }
+
+        private string GetStepExpectedRx(int stepNo)
+        {
+            switch (stepNo)
+            {
+                case 1:
+                case 2:
+                    return "OK";
+
+                case 3:
+                    return "MTRADDED";
+
+                case 4:
+                    return "MTRDATA";
+
+                case 5:
+                    return "RELAYOK";
+
+                case 6:
+                    return "INPUTOK";
+
+                case 7:
+                    return "FINOK";
+
+                default:
+                    return "OK";
+            }
+        }
+
 
         private bool ValidateRx(string rx, string expected)
         {
-            if (string.IsNullOrWhiteSpace(rx)) return false;
-            return rx.Contains(expected, StringComparison.OrdinalIgnoreCase);
+            if (string.IsNullOrWhiteSpace(rx))
+                return false;
+
+            return rx.IndexOf(expected, StringComparison.OrdinalIgnoreCase) >= 0;
         }
+
 
         // ====== Real IO (COM/TCP) ======
 
@@ -201,31 +221,21 @@ namespace BaylanModemTest
             // COM
             _serial = new SerialPort(
                 cmbComPort.Text,
-                Convert.ToInt32(cmbBaudRate.Text),
-                Enum.Parse<Parity>(cmbParity.Text),
-                Convert.ToInt32(cmbDataBits.Text),
-                Enum.Parse<StopBits>(cmbStopBits.Text)
-            );
-            _serial.ReadTimeout = 3000;
-            _serial.WriteTimeout = 3000;
+                int.Parse(cmbBaudRate.Text),
+                (Parity)Enum.Parse(typeof(Parity), cmbParity.Text),
+                int.Parse(cmbDataBits.Text),
+                (StopBits)Enum.Parse(typeof(StopBits), cmbStopBits.Text)
+            )
+            {
+                ReadTimeout = 3000,
+                WriteTimeout = 3000
+            };
+
             _serial.Open();
             LogInfo("COM açıldı.");
-
-            if (chkUseTcp.Checked)
-            {
-                var ip = txtTcpIp.Text.Trim();
-                var pushPort = (int)numPushPort.Value;
-                var pullPort = (int)numPullPort.Value;
-
-                _tcpPush = new TcpClient();
-                await _tcpPush.ConnectAsync(ip, pushPort, ct);
-
-                _tcpPull = new TcpClient();
-                await _tcpPull.ConnectAsync(ip, pullPort, ct);
-
-                LogInfo("TCP Push/Pull bağlandı.");
-            }
         }
+
+
 
         private async Task<string> SendAndReceiveAsync(string cmd, CancellationToken ct)
         {
@@ -259,7 +269,6 @@ namespace BaylanModemTest
             }, ct);
         }
 
-        // ====== UI helpers ======
 
         private void StopAll(string reason)
         {
@@ -279,7 +288,6 @@ namespace BaylanModemTest
         private void LockSettings(bool locked)
         {
             grpConnection.Enabled = !locked;
-            grpDummy.Enabled = !locked;
 
             btnStart.Enabled = !locked;
             btnStop.Enabled = locked;
@@ -307,7 +315,6 @@ namespace BaylanModemTest
             rtbLog.AppendText($"[{DateTime.Now:HH:mm:ss}] {tag}: {msg}\r\n");
             rtbLog.SelectionColor = rtbLog.ForeColor;
 
-            if (chkAutoScrollLog.Checked)
                 rtbLog.ScrollToCaret();
         }
     }
@@ -329,16 +336,16 @@ namespace BaylanModemTest
 
         public void SetWaiting()
         {
-            _led.BackColor = Color.DimGray;
+            _led.BackColor = Color.Silver;
             _status.Text = "Bekliyor";
             _status.ForeColor = Color.Silver;
         }
 
         public void SetRunning()
         {
-            _led.BackColor = Color.Gold;
+            _led.BackColor = Color.Orange;
             _status.Text = "Çalışıyor";
-            _status.ForeColor = Color.Gold;
+            _status.ForeColor = Color.Orange;
         }
 
         public void SetPass()

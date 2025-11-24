@@ -1,0 +1,9 @@
+D:\Git\baylan-modem-test\baylan-modem-test\baylan-modem-test\BaylanModemTest\obj\Debug\BaylanModemTest.FrmModemTest.resources
+D:\Git\baylan-modem-test\baylan-modem-test\baylan-modem-test\BaylanModemTest\obj\Debug\BaylanModemTest.Properties.Resources.resources
+D:\Git\baylan-modem-test\baylan-modem-test\baylan-modem-test\BaylanModemTest\obj\Debug\BaylanModemTest.csproj.GenerateResource.cache
+D:\Git\baylan-modem-test\baylan-modem-test\baylan-modem-test\BaylanModemTest\obj\Debug\BaylanModemTest.csproj.CoreCompileInputs.cache
+D:\Git\baylan-modem-test\baylan-modem-test\baylan-modem-test\BaylanModemTest\bin\Debug\BaylanModemTest.exe.config
+D:\Git\baylan-modem-test\baylan-modem-test\baylan-modem-test\BaylanModemTest\bin\Debug\BaylanModemTest.exe
+D:\Git\baylan-modem-test\baylan-modem-test\baylan-modem-test\BaylanModemTest\bin\Debug\BaylanModemTest.pdb
+D:\Git\baylan-modem-test\baylan-modem-test\baylan-modem-test\BaylanModemTest\obj\Debug\BaylanModemTest.exe
+D:\Git\baylan-modem-test\baylan-modem-test\baylan-modem-test\BaylanModemTest\obj\Debug\BaylanModemTest.pdb
