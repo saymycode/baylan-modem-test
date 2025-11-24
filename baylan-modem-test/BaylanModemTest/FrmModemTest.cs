@@ -67,7 +67,7 @@ namespace BaylanModemTest
 
         private void btnStop_Click(object sender, EventArgs e)
         {
-            StopAll("Kullanıcı testi durdurdu.");
+            StopAll("Kullanıcı testi durdurdu.", true);
         }
 
         private async Task RunAllStepsAsync(CancellationToken ct)
@@ -93,7 +93,7 @@ namespace BaylanModemTest
                     {
                         step.SetFail("Hata");
                         LogError($"Adım {step.Number} başarısız. Test durdu.");
-                        StopAll("Test hata ile durdu.");
+                        StopAll("Test hata ile durdu.", true);
                         return;
                     }
 
@@ -104,17 +104,17 @@ namespace BaylanModemTest
                 overallProgress.Value = 100;
                 lblCurrentStep.Text = "Şu an: Tamamlandı";
                 LogInfo("Tüm testler başarıyla tamamlandı.");
-                StopAll("Test bitti.");
+                StopAll("Test bitti.", false);
             }
             catch (OperationCanceledException)
             {
                 LogInfo("Test iptal edildi.");
-                StopAll("İptal.");
+                StopAll("İptal.", true);
             }
             catch (Exception ex)
             {
                 LogError("Beklenmeyen hata: " + ex.Message);
-                StopAll("Hata.");
+                StopAll("Hata.", true);
             }
         }
 
@@ -122,7 +122,7 @@ namespace BaylanModemTest
         {
             // Her adım için dummy/gerçek komut seti burada
             var txCommands = GetStepTxCommands(step.Number);
-            var expectedRx = GetStepExpectedRx(step.Number);
+            var expectedRx = GetStepExpectation(step.Number);
 
             foreach (var cmd in txCommands)
             {
@@ -137,8 +137,11 @@ namespace BaylanModemTest
 
                 LogRx(rx);
 
-                if (!ValidateRx(rx, expectedRx))
+                if (!ValidateRx(rx, expectedRx, out var error))
+                {
+                    LogError($"Adım {step.Number} doğrulama hatası: {error}");
                     return false;
+                }
             }
 
             return true;
@@ -176,41 +179,121 @@ namespace BaylanModemTest
             }
         }
 
-        private string GetStepExpectedRx(int stepNo)
+        private StepExpectation GetStepExpectation(int stepNo)
         {
             switch (stepNo)
             {
                 case 1:
                 case 2:
-                    return "OK";
+                    return new StepExpectation("OK");
 
                 case 3:
-                    return "MTRADDED";
+                    return new StepExpectation("MTRADDED", new Dictionary<string, string>
+                    {
+                        {"RESULT", "OK"},
+                        {"METER", "00112233"}
+                    });
 
                 case 4:
-                    return "MTRDATA";
+                    return new StepExpectation("MTRDATA", new Dictionary<string, string>
+                    {
+                        {"METER", "00112233"},
+                        {"STATUS", "OK"}
+                    });
 
                 case 5:
-                    return "RELAYOK";
+                    return new StepExpectation("RELAYOK", new Dictionary<string, string>
+                    {
+                        {"RELAY", "CLOSED"}
+                    });
 
                 case 6:
-                    return "INPUTOK";
+                    return new StepExpectation("INPUTOK", new Dictionary<string, string>
+                    {
+                        {"INPUT", "HIGH"}
+                    });
 
                 case 7:
-                    return "FINOK";
+                    return new StepExpectation("FINOK", new Dictionary<string, string>
+                    {
+                        {"STATUS", "OK"}
+                    });
 
                 default:
-                    return "OK";
+                    return new StepExpectation("OK");
             }
         }
 
 
-        private bool ValidateRx(string rx, string expected)
+        private bool ValidateRx(string rx, StepExpectation expectation, out string error)
         {
-            if (string.IsNullOrWhiteSpace(rx))
-                return false;
+            error = string.Empty;
 
-            return rx.IndexOf(expected, StringComparison.OrdinalIgnoreCase) >= 0;
+            if (string.IsNullOrWhiteSpace(rx))
+            {
+                error = "Cevap boş geldi.";
+                return false;
+            }
+
+            if (expectation == null)
+                return true;
+
+            if (expectation.Fields.Any())
+            {
+                var parsed = ParseFields(rx);
+                foreach (var kvp in expectation.Fields)
+                {
+                    if (!parsed.TryGetValue(kvp.Key, out var actual))
+                    {
+                        error = $"{kvp.Key} alanı bulunamadı.";
+                        return false;
+                    }
+
+                    if (!string.Equals(actual, kvp.Value, StringComparison.OrdinalIgnoreCase))
+                    {
+                        error = $"{kvp.Key} beklenen: {kvp.Value}, gelen: {actual}";
+                        return false;
+                    }
+                }
+            }
+
+            if (!string.IsNullOrWhiteSpace(expectation.ContainsText) &&
+                rx.IndexOf(expectation.ContainsText, StringComparison.OrdinalIgnoreCase) < 0)
+            {
+                error = $"Cevap içinde beklenen ifade yok: {expectation.ContainsText}";
+                return false;
+            }
+
+            return true;
+        }
+
+        private Dictionary<string, string> ParseFields(string rx)
+        {
+            var result = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            var separators = new[] { ';', '\n', '\r' };
+            var parts = rx.Split(separators, StringSplitOptions.RemoveEmptyEntries);
+
+            foreach (var part in parts)
+            {
+                var trimmed = part.Trim();
+                if (string.IsNullOrEmpty(trimmed))
+                    continue;
+
+                var idx = trimmed.IndexOf('=');
+                if (idx < 0)
+                    idx = trimmed.IndexOf(':');
+
+                if (idx <= 0 || idx >= trimmed.Length - 1)
+                    continue;
+
+                var key = trimmed.Substring(0, idx).Trim();
+                var value = trimmed.Substring(idx + 1).Trim();
+
+                if (!result.ContainsKey(key))
+                    result[key] = value;
+            }
+
+            return result;
         }
 
 
@@ -270,7 +353,7 @@ namespace BaylanModemTest
         }
 
 
-        private void StopAll(string reason)
+        private void StopAll(string reason, bool resetSteps = true)
         {
             _cts?.Cancel();
             _cts = null;
@@ -282,6 +365,10 @@ namespace BaylanModemTest
             _serial = null; _tcpPush = null; _tcpPull = null;
 
             LockSettings(false);
+
+            if (resetSteps)
+                ResetStepsState();
+
             LogInfo("Test sonlandı: " + reason);
         }
 
@@ -295,10 +382,15 @@ namespace BaylanModemTest
 
         private void ResetUi()
         {
+            ResetStepsState();
+            rtbLog.Clear();
+        }
+
+        private void ResetStepsState()
+        {
             foreach (var s in _steps) s.SetWaiting();
             lblCurrentStep.Text = "Şu an: Bekliyor";
             overallProgress.Value = 0;
-            rtbLog.Clear();
         }
 
         private void LogInfo(string msg) => AppendLog("INFO", msg, Color.Gray);
@@ -316,6 +408,18 @@ namespace BaylanModemTest
             rtbLog.SelectionColor = rtbLog.ForeColor;
 
                 rtbLog.ScrollToCaret();
+        }
+    }
+
+    internal class StepExpectation
+    {
+        public string ContainsText { get; }
+        public Dictionary<string, string> Fields { get; }
+
+        public StepExpectation(string containsText, Dictionary<string, string> fields = null)
+        {
+            ContainsText = containsText ?? string.Empty;
+            Fields = fields ?? new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
         }
     }
 
