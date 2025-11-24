@@ -154,7 +154,7 @@ namespace BaylanModemTest
             switch (stepNo)
             {
                 case 1:
-                    return new List<string> { "AT\r\n" };
+                    return new List<string> { "QCK_RESET_OSOS\r\n" };
 
                 case 2:
                     return new List<string> { "AT+RST\r\n" };
