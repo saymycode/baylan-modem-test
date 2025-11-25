@@ -2,6 +2,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
 using System.IO.Ports;
 using System.Linq;
 using System.Net;
@@ -34,27 +35,13 @@ namespace BaylanModemTest
 
 
         private readonly List<TestStep> _steps;
+        private AppSettings _settings;
+        private string _settingsFilePath;
+        private SettingsStorage _settingsStorage;
 
         public FrmModemTest()
         {
             InitializeComponent();
-
-            // COM port listesini doldur
-            cmbComPort.Items.AddRange(SerialPort.GetPortNames());
-            if (cmbComPort.Items.Count > 0) cmbComPort.SelectedIndex = 0;
-
-            cmbBaudRate.Items.AddRange(new object[] { 9600, 19200, 38400, 57600, 115200 });
-            cmbBaudRate.SelectedIndex = 3;
-            cmbParity.Items.AddRange(Enum.GetNames(typeof(Parity)));
-            cmbParity.SelectedItem = "None";
-            cmbDataBits.Items.AddRange(new object[] { 7, 8 });
-            cmbDataBits.SelectedItem = 8;
-            cmbStopBits.Items.AddRange(Enum.GetNames(typeof(StopBits)));
-            cmbStopBits.SelectedItem = "One";
-            cmbMeterBaudRate.Items.AddRange(new object[] { 9600, 19200, 38400, 57600, 115200 });
-            cmbMeterBaudRate.SelectedItem = 9600;
-            txtMeterFlag.Text = "0";
-
 
             // Test adımları
             _steps = new List<TestStep>
@@ -65,6 +52,11 @@ namespace BaylanModemTest
                 new TestStep(4, "Sayaç Okuma Testi", pnlStep4Led, lblStep4Status),
                 new TestStep(5, "Finalize Testi", pnlStep7Led, lblStep7Status),
             };
+
+            _settingsFilePath = Path.Combine(Application.StartupPath, "ayarlar.db");
+            _settingsStorage = new SettingsStorage(_settingsFilePath);
+            _settings = _settingsStorage.Load() ?? AppSettings.CreateDefault();
+            _settingsStorage.Save(_settings);
 
             ResetUi();
         }
@@ -310,7 +302,7 @@ namespace BaylanModemTest
 
         private string GetMeterSerialNumber()
         {
-            var serial = txtMeterSerial.Text?.Trim();
+            var serial = _settings.MeterSerial?.Trim();
 
             if (string.IsNullOrWhiteSpace(serial))
                 throw new InvalidOperationException("Sayaç seri numarası boş olamaz.");
@@ -320,15 +312,15 @@ namespace BaylanModemTest
 
         private string GetMeterFlag()
         {
-            return txtMeterFlag.Text?.Trim() ?? string.Empty;
+            return _settings.MeterFlag?.Trim() ?? string.Empty;
         }
 
         private int GetMeterBaudRate()
         {
-            if (int.TryParse(cmbMeterBaudRate.Text, out var baud))
-                return baud;
+            if (_settings.MeterBaudRate <= 0)
+                throw new InvalidOperationException("Sayaç baudrate değeri geçersiz.");
 
-            throw new InvalidOperationException("Sayaç baudrate değeri geçersiz.");
+            return _settings.MeterBaudRate;
         }
 
         private bool ValidateRx(string rx, StepExpectation expectation, out string error)
@@ -501,14 +493,14 @@ namespace BaylanModemTest
 
         private async Task OpenConnectionsAsync(CancellationToken ct)
         {
-            // COM
+            ValidateSettings();
+
             _serial = new SerialPort(
-                cmbComPort.Text,
-                int.Parse(cmbBaudRate.Text),
-                (Parity)Enum.Parse(typeof(Parity), cmbParity.Text),
-                int.Parse(cmbDataBits.Text),
-                (StopBits)Enum.Parse(typeof(StopBits), cmbStopBits.Text)
-            )
+                _settings.ComPort,
+                _settings.BaudRate,
+                _settings.Parity,
+                _settings.DataBits,
+                _settings.StopBits)
             {
                 ReadTimeout = 180000,
                 WriteTimeout = 180000
@@ -521,19 +513,19 @@ namespace BaylanModemTest
 
             _listenerCts = CancellationTokenSource.CreateLinkedTokenSource(ct);
 
-            var ipText = txtTcpIp.Text?.Trim();
+            var ipText = _settings.TcpIp?.Trim();
             if (string.IsNullOrWhiteSpace(ipText))
                 throw new InvalidOperationException("TCP IP boş olamaz.");
 
             var ip = IPAddress.Parse(ipText);
 
             _tcpPush = new TcpClient();
-            await _tcpPush.ConnectAsync(ip, (int)numPushPort.Value);
-            LogInfo($"TCP Push bağlantısı açıldı ({ip}:{(int)numPushPort.Value}).");
+            await _tcpPush.ConnectAsync(ip, _settings.PushPort);
+            LogInfo($"TCP Push bağlantısı açıldı ({ip}:{_settings.PushPort}).");
 
-            _tcpPull = new TcpListener(IPAddress.Any, (int)numPullPort.Value);
+            _tcpPull = new TcpListener(IPAddress.Any, _settings.PullPort);
             _tcpPull.Start();
-            LogInfo($"TCP Pull dinleyici başlatıldı (Port: {numPullPort.Value}).");
+            LogInfo($"TCP Pull dinleyici başlatıldı (Port: {_settings.PullPort}).");
             _ = Task.Run(() => AcceptPullClientAsync(_tcpPull));
 
         }
@@ -728,16 +720,15 @@ namespace BaylanModemTest
 
         private void LockSettings(bool locked)
         {
-            //grpConnection.Enabled = !locked;
-
             btnStart.Enabled = !locked;
-            btnStop.Enabled = true;
+            btnStop.Enabled = locked;
         }
 
         private void ResetUi()
         {
             ResetStepsState();
             rtbLog.Clear();
+            btnStop.Enabled = false;
         }
 
         private void ResetStepsState()
@@ -760,8 +751,37 @@ namespace BaylanModemTest
             rtbLog.SelectionColor = color;
             rtbLog.AppendText($"[{DateTime.Now:HH:mm:ss}] {tag}: {msg}\r\n");
             rtbLog.SelectionColor = rtbLog.ForeColor;
+            rtbLog.ScrollToCaret();
+        }
 
-                rtbLog.ScrollToCaret();
+        private void ValidateSettings()
+        {
+            if (_settings == null)
+                throw new InvalidOperationException("Ayarlar yüklenemedi.");
+
+            if (string.IsNullOrWhiteSpace(_settings.ComPort))
+                throw new InvalidOperationException("COM port seçilmelidir.");
+
+            if (string.IsNullOrWhiteSpace(_settings.TcpIp))
+                throw new InvalidOperationException("TCP IP adresi boş olamaz.");
+
+            if (_settings.PushPort <= 0 || _settings.PullPort <= 0)
+                throw new InvalidOperationException("TCP portları 0'dan büyük olmalıdır.");
+        }
+
+        private void settingsMenuItem_Click(object sender, EventArgs e)
+        {
+            using (var form = new FrmSettings(_settings.Clone(), _settingsFilePath))
+            {
+                if (form.ShowDialog(this) == DialogResult.OK)
+                {
+                    _settings = form.UpdatedSettings;
+                    _settingsFilePath = form.SettingsFilePath;
+                    _settingsStorage = new SettingsStorage(_settingsFilePath);
+                    _settingsStorage.Save(_settings);
+                    LogInfo("Ayarlar güncellendi ve kaydedildi.");
+                }
+            }
         }
     }
 }
