@@ -51,6 +51,9 @@ namespace BaylanModemTest
             cmbDataBits.SelectedItem = 8;
             cmbStopBits.Items.AddRange(Enum.GetNames(typeof(StopBits)));
             cmbStopBits.SelectedItem = "One";
+            cmbMeterBaudRate.Items.AddRange(new object[] { 9600, 19200, 38400, 57600, 115200 });
+            cmbMeterBaudRate.SelectedItem = 9600;
+            txtMeterFlag.Text = "0";
 
 
             // Test adımları
@@ -134,24 +137,23 @@ namespace BaylanModemTest
         }
         private class StepCommandPlanItem
         {
-            public string Cmd { get; set; }
-            public StepExpectation Expectation { get; set; }
-            public bool UseTcp { get; set; }
+            public string Cmd { get; }
+            public StepExpectation Expectation { get; }
+            public bool UseTcp { get; }
+            public TimeSpan DelayAfter { get; }
 
-            public StepCommandPlanItem(string cmd, StepExpectation exp, bool useTcp = false)
+            public StepCommandPlanItem(string cmd, StepExpectation exp, bool useTcp = false, TimeSpan? delayAfter = null)
             {
                 Cmd = cmd;
                 Expectation = exp;
                 UseTcp = useTcp;
+                DelayAfter = delayAfter ?? TimeSpan.Zero;
             }
         }
-
-
 
         private async Task<bool> RunStepAsync(TestStep step, CancellationToken ct)
         {
             var plan = GetStepCommandPlan(step.Number);
-            //var plan = GetStepCommandPlan(2);
 
             foreach (var item in plan)
             {
@@ -162,46 +164,67 @@ namespace BaylanModemTest
                     ? await SendAndReceiveTcpAsync(item.Cmd, item.Expectation, ct)
                     : await SendAndReceiveAsync(item.Cmd, item.Expectation, ct);
 
-                string error;
-                if (!ValidateRx(rx, item.Expectation, out error))
+                if (!ValidateRx(rx, item.Expectation, out var error))
                 {
                     LogError($"Adım {step.Name} doğrulama hatası: {error}");
                     return false;
                 }
+
+                if (item.DelayAfter > TimeSpan.Zero)
+                {
+                    LogInfo($"Sonraki komut öncesi {item.DelayAfter.TotalSeconds:0.#} saniye bekleniyor.");
+                    await Task.Delay(item.DelayAfter, ct);
+                }
             }
 
-            Thread.Sleep(2000);
+            await Task.Delay(TimeSpan.FromSeconds(2), ct);
             return true;
         }
+
         private List<StepCommandPlanItem> GetStepCommandPlan(int stepNo)
         {
-            switch (stepNo)
+            return stepNo switch
             {
-                case 1: // Uyanma (dummy)
-                    return new List<StepCommandPlanItem>
+                1 => BuildWakeStepPlan(),
+                2 => BuildRelayStepPlan(),
+                3 => BuildMeterAddStepPlan(),
+                4 => BuildMeterReadStepPlan(),
+                5 => BuildFinalizeStepPlan(),
+                _ => new List<StepCommandPlanItem>()
+            };
+        }
+
+        private List<StepCommandPlanItem> BuildWakeStepPlan()
+        {
+            return new List<StepCommandPlanItem>
             {
                 new StepCommandPlanItem(
                     "QCK_RESET_OSOS\r\n",
                     new StepExpectation("FREE SPACE")
                 )
             };
+        }
 
-                case 2: // Röle (uyanma gibi, 2 komut + 2 expectation)
-                    return new List<StepCommandPlanItem>
+        private List<StepCommandPlanItem> BuildRelayStepPlan()
+        {
+            return new List<StepCommandPlanItem>
             {
                 new StepCommandPlanItem(
                     BuildRelayCommand(1),
-                    new StepExpectation("RPS01:1")
+                    new StepExpectation("RPS01:1"),
+                    delayAfter: TimeSpan.FromSeconds(3)
                 ),
                 new StepCommandPlanItem(
                     BuildRelayCommand(0),
                     new StepExpectation("RPS01:0")
                 )
             };
+        }
 
-                case 3: // Sayaç ekleme (TCP)
-                    var meterSerialToAdd = GetMeterSerialNumber();
-                    return new List<StepCommandPlanItem>
+        private List<StepCommandPlanItem> BuildMeterAddStepPlan()
+        {
+            var meterSerialToAdd = GetMeterSerialNumber();
+            return new List<StepCommandPlanItem>
             {
                 new StepCommandPlanItem(
                     BuildMeterAddCommand(meterSerialToAdd),
@@ -213,10 +236,12 @@ namespace BaylanModemTest
                     useTcp: true
                 )
             };
+        }
 
-                case 4: // Sayaç okuma (TCP)
-                    var meterSerialToRead = GetMeterSerialNumber();
-                    return new List<StepCommandPlanItem>
+        private List<StepCommandPlanItem> BuildMeterReadStepPlan()
+        {
+            var meterSerialToRead = GetMeterSerialNumber();
+            return new List<StepCommandPlanItem>
             {
                 new StepCommandPlanItem(
                     BuildMeterReadCommand(meterSerialToRead),
@@ -228,9 +253,11 @@ namespace BaylanModemTest
                     useTcp: true
                 )
             };
+        }
 
-                case 5: // Finalize (dummy)
-                    return new List<StepCommandPlanItem>
+        private List<StepCommandPlanItem> BuildFinalizeStepPlan()
+        {
+            return new List<StepCommandPlanItem>
             {
                 new StepCommandPlanItem(
                     "AT+FIN\r\n",
@@ -240,10 +267,6 @@ namespace BaylanModemTest
                     })
                 )
             };
-
-                default:
-                    return new List<StepCommandPlanItem>();
-            }
         }
 
         // ====== Command Maps (dummy) ======
@@ -283,6 +306,19 @@ namespace BaylanModemTest
                 throw new InvalidOperationException("Sayaç seri numarası boş olamaz.");
 
             return serial.ToUpperInvariant();
+        }
+
+        private string GetMeterFlag()
+        {
+            return txtMeterFlag.Text?.Trim() ?? string.Empty;
+        }
+
+        private int GetMeterBaudRate()
+        {
+            if (int.TryParse(cmbMeterBaudRate.Text, out var baud))
+                return baud;
+
+            throw new InvalidOperationException("Sayaç baudrate değeri geçersiz.");
         }
 
         private bool ValidateRx(string rx, StepExpectation expectation, out string error)

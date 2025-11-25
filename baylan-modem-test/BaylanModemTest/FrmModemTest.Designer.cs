@@ -42,6 +42,10 @@ namespace BaylanModemTest
             this.cmbDataBits = new System.Windows.Forms.ComboBox();
             this.lblStopBits = new System.Windows.Forms.Label();
             this.cmbStopBits = new System.Windows.Forms.ComboBox();
+            this.lblMeterFlag = new System.Windows.Forms.Label();
+            this.txtMeterFlag = new System.Windows.Forms.TextBox();
+            this.lblMeterBaud = new System.Windows.Forms.Label();
+            this.cmbMeterBaudRate = new System.Windows.Forms.ComboBox();
             this.tcpLayout = new System.Windows.Forms.TableLayoutPanel();
             this.lblTcpIp = new System.Windows.Forms.Label();
             this.txtTcpIp = new System.Windows.Forms.TextBox();
@@ -151,16 +155,22 @@ namespace BaylanModemTest
             this.comLayout.Controls.Add(this.cmbDataBits, 1, 3);
             this.comLayout.Controls.Add(this.lblStopBits, 0, 4);
             this.comLayout.Controls.Add(this.cmbStopBits, 1, 4);
+            this.comLayout.Controls.Add(this.lblMeterFlag, 0, 5);
+            this.comLayout.Controls.Add(this.txtMeterFlag, 1, 5);
+            this.comLayout.Controls.Add(this.lblMeterBaud, 0, 6);
+            this.comLayout.Controls.Add(this.cmbMeterBaudRate, 1, 6);
             this.comLayout.Dock = System.Windows.Forms.DockStyle.Fill;
             this.comLayout.Location = new System.Drawing.Point(4, 4);
             this.comLayout.Margin = new System.Windows.Forms.Padding(4);
             this.comLayout.Name = "comLayout";
-            this.comLayout.RowCount = 5;
-            this.comLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 20F));
-            this.comLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 20F));
-            this.comLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 20F));
-            this.comLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 20F));
-            this.comLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 20F));
+            this.comLayout.RowCount = 7;
+            this.comLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 14.28571F));
+            this.comLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 14.28571F));
+            this.comLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 14.28571F));
+            this.comLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 14.28571F));
+            this.comLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 14.28571F));
+            this.comLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 14.28571F));
+            this.comLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 14.28571F));
             this.comLayout.Size = new System.Drawing.Size(572, 209);
             this.comLayout.TabIndex = 0;
             // 
@@ -273,9 +283,50 @@ namespace BaylanModemTest
             this.cmbStopBits.Name = "cmbStopBits";
             this.cmbStopBits.Size = new System.Drawing.Size(446, 28);
             this.cmbStopBits.TabIndex = 9;
-            // 
+            //
+            // lblMeterFlag
+            //
+            this.lblMeterFlag.AutoSize = true;
+            this.lblMeterFlag.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.lblMeterFlag.Location = new System.Drawing.Point(3, 209);
+            this.lblMeterFlag.Name = "lblMeterFlag";
+            this.lblMeterFlag.Size = new System.Drawing.Size(114, 29);
+            this.lblMeterFlag.TabIndex = 10;
+            this.lblMeterFlag.Text = "Sayaç Flag";
+            this.lblMeterFlag.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            //
+            // txtMeterFlag
+            //
+            this.txtMeterFlag.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.txtMeterFlag.Location = new System.Drawing.Point(123, 212);
+            this.txtMeterFlag.Name = "txtMeterFlag";
+            this.txtMeterFlag.Size = new System.Drawing.Size(446, 27);
+            this.txtMeterFlag.TabIndex = 11;
+            //
+            // lblMeterBaud
+            //
+            this.lblMeterBaud.AutoSize = true;
+            this.lblMeterBaud.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.lblMeterBaud.Location = new System.Drawing.Point(3, 238);
+            this.lblMeterBaud.Name = "lblMeterBaud";
+            this.lblMeterBaud.Size = new System.Drawing.Size(114, 31);
+            this.lblMeterBaud.TabIndex = 12;
+            this.lblMeterBaud.Text = "Sayaç Baud";
+            this.lblMeterBaud.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            //
+            // cmbMeterBaudRate
+            //
+            this.cmbMeterBaudRate.BackColor = System.Drawing.SystemColors.Control;
+            this.cmbMeterBaudRate.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.cmbMeterBaudRate.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbMeterBaudRate.FormattingEnabled = true;
+            this.cmbMeterBaudRate.Location = new System.Drawing.Point(123, 241);
+            this.cmbMeterBaudRate.Name = "cmbMeterBaudRate";
+            this.cmbMeterBaudRate.Size = new System.Drawing.Size(446, 28);
+            this.cmbMeterBaudRate.TabIndex = 13;
+            //
             // tcpLayout
-            // 
+            //
             this.tcpLayout.ColumnCount = 2;
             this.tcpLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 175F));
             this.tcpLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
@@ -781,6 +832,10 @@ namespace BaylanModemTest
         private System.Windows.Forms.ComboBox cmbDataBits;
         private System.Windows.Forms.Label lblStopBits;
         private System.Windows.Forms.ComboBox cmbStopBits;
+        private System.Windows.Forms.Label lblMeterFlag;
+        private System.Windows.Forms.TextBox txtMeterFlag;
+        private System.Windows.Forms.Label lblMeterBaud;
+        private System.Windows.Forms.ComboBox cmbMeterBaudRate;
         private System.Windows.Forms.TableLayoutPanel tcpLayout;
         private System.Windows.Forms.Label lblTcpIp;
         private System.Windows.Forms.TextBox txtTcpIp;
