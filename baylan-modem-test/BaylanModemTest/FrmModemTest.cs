@@ -104,13 +104,13 @@ namespace BaylanModemTest
                     if (!ok)
                     {
                         step.SetFail("Hata");
-                        LogError($"Adım {step.Number} başarısız. Test durdu.");
+                        LogError($"Adım {step.Name} başarısız. Test durdu.");
                         StopAll("Test hata ile durdu.", true);
                         return;
                     }
 
                     step.SetPass();
-                    LogInfo($"Adım {step.Number} geçti.");
+                    LogInfo($"Adım {step.Name} geçti.");
 
                     // --- ADIM TAMAMLANDI → 5-10 sn bekleme ---
                     await Task.Delay(7000, ct);  // 7 saniye (ister 5000–10000 arası yaparsın)
@@ -165,7 +165,7 @@ namespace BaylanModemTest
                 string error;
                 if (!ValidateRx(rx, item.Expectation, out error))
                 {
-                    LogError($"Adım {step.Number} doğrulama hatası: {error}");
+                    LogError($"Adım {step.Name} doğrulama hatası: {error}");
                     return false;
                 }
             }
@@ -246,50 +246,6 @@ namespace BaylanModemTest
             }
         }
 
-        private async Task<bool> RunRelayStepAsync(CancellationToken ct)
-        {
-            var relayOnCmd = BuildRelayCommand(1);
-            var relayOffCmd = BuildRelayCommand(0);
-
-            var initialExpectation = new StepExpectation("RPS01:");
-
-            ct.ThrowIfCancellationRequested();
-            LogTx(relayOnCmd);
-            var relayOnResponse = await SendAndReceiveAsync(relayOnCmd, initialExpectation, ct);
-
-            if (IsRelayOn(relayOnResponse))
-            {
-                LogInfo("Röle 1 ON doğrulandı, OFF komutu gönderiliyor.");
-                var offExpectation = new StepExpectation("RPS01:0");
-
-                ct.ThrowIfCancellationRequested();
-                LogTx(relayOffCmd);
-                var relayOffResponse = await SendAndReceiveAsync(relayOffCmd, offExpectation, ct);
-
-                if (IsRelayOff(relayOffResponse))
-                    return true;
-
-                LogError("Röle 1 OFF beklenirken farklı cevap alındı.");
-                return false;
-            }
-
-            if (IsRelayOff(relayOnResponse))
-                return true;
-
-            LogError("Röle 1 durumu doğrulanamadı.");
-            return false;
-        }
-
-        private bool IsRelayOn(string response)
-        {
-            return response?.IndexOf("RPS01:1", StringComparison.OrdinalIgnoreCase) >= 0;
-        }
-
-        private bool IsRelayOff(string response)
-        {
-            return response?.IndexOf("RPS01:0", StringComparison.OrdinalIgnoreCase) >= 0;
-        }
-
         // ====== Command Maps (dummy) ======
         private string BuildRelayCommand(int targetState)
         {
@@ -328,46 +284,6 @@ namespace BaylanModemTest
 
             return serial.ToUpperInvariant();
         }
-
-        private List<string> GetStepTxCommands(int stepNo)
-        {
-            switch (stepNo)
-            {
-                case 1:
-                    return new List<string> { "QCK_RESET_OSOS\r\n" };
-
-                case 5:
-                    return new List<string> { "AT+FIN\r\n" };
-
-                default:
-                    return new List<string>();
-            }
-        }
-
-        private StepExpectation GetStepExpectation(int stepNo)
-        {
-            switch (stepNo)
-            {
-                case 1:
-                    return new StepExpectation("FREE SPACE");
-
-                case 2:
-                    return new StepExpectation("RELAYOK", new Dictionary<string, string>
-                    {
-                        {"RELAY", "CLOSED"}
-                    });
-
-                case 5:
-                    return new StepExpectation("FINOK", new Dictionary<string, string>
-                    {
-                        {"STATUS", "OK"}
-                    });
-
-                default:
-                    return new StepExpectation("OK");
-            }
-        }
-
 
         private bool ValidateRx(string rx, StepExpectation expectation, out string error)
         {
@@ -440,7 +356,6 @@ namespace BaylanModemTest
             return result;
         }
 
-
         // ====== Real IO (COM/TCP) ======
         // ADD: eski uygulamadaki mantığın aynısı
         private void Serial_DataReceived(object sender, SerialDataReceivedEventArgs e)
@@ -484,7 +399,6 @@ namespace BaylanModemTest
                 .Replace("\x0A", "<LF>")
                 .Replace("\x0D", "<CR>");
         }
-
 
         private IEnumerable<string> CollectSerialMessages(string incomingData)
         {
@@ -563,19 +477,19 @@ namespace BaylanModemTest
 
             //_tcpListenerTask = Task.Run(() => ListenTcpAsync(_listenerCts.Token), ct);
 
-            var ipText = txtTcpIp.Text?.Trim();
-            if (string.IsNullOrWhiteSpace(ipText))
-                throw new InvalidOperationException("TCP IP boş olamaz.");
+            //var ipText = txtTcpIp.Text?.Trim();
+            //if (string.IsNullOrWhiteSpace(ipText))
+            //    throw new InvalidOperationException("TCP IP boş olamaz.");
 
-            var ip = IPAddress.Parse(ipText);
+            //var ip = IPAddress.Parse(ipText);
 
-            _tcpPush = new TcpClient();
-            await _tcpPush.ConnectAsync(ip, (int)numPushPort.Value);
-            LogInfo($"TCP Push bağlantısı açıldı ({ip}:{numPushPort.Value}).");
+            //_tcpPush = new TcpClient();
+            //await _tcpPush.ConnectAsync(ip, (int)numPushPort.Value);
+            //LogInfo($"TCP Push bağlantısı açıldı ({ip}:{numPushPort.Value}).");
 
-            _tcpPull = new TcpClient();
-            await _tcpPull.ConnectAsync(ip, (int)numPullPort.Value);
-            LogInfo($"TCP Pull bağlantısı açıldı ({ip}:{numPullPort.Value}).");
+            //_tcpPull = new TcpClient();
+            //await _tcpPull.ConnectAsync(ip, (int)numPullPort.Value);
+            //LogInfo($"TCP Pull bağlantısı açıldı ({ip}:{numPullPort.Value}).");
         }
 
         private async Task<string> SendAndReceiveAsync(string cmd, StepExpectation expectation, CancellationToken ct)
@@ -725,7 +639,7 @@ namespace BaylanModemTest
         private void PrepareForExpectedResponse(StepExpectation expectation)
         {
             _pendingExpectation = expectation;
-            _pendingSerialResponse = new TaskCompletionSource<string>(TaskCreationOptions.RunContinuationsAsynchronously);
+                                            _pendingSerialResponse = new TaskCompletionSource<string>(TaskCreationOptions.RunContinuationsAsynchronously);
         }
 
         private void TryCompletePending(string message)
