@@ -518,7 +518,7 @@ namespace BaylanModemTest
 
             _listenerCts = CancellationTokenSource.CreateLinkedTokenSource(ct);
 
-            //_tcpListenerTask = Task.Run(() => ListenTcpAsync(_listenerCts.Token), ct);
+            _tcpListenerTask = Task.Run(() => ListenTcpAsync(_listenerCts.Token), ct);
 
             var ipText = txtTcpIp.Text?.Trim();
             if (string.IsNullOrWhiteSpace(ipText))
@@ -526,9 +526,10 @@ namespace BaylanModemTest
 
             var ip = IPAddress.Parse(ipText);
 
+            const int pushPort = 4069;
             _tcpPush = new TcpClient();
-            await _tcpPush.ConnectAsync(ip, (int)numPushPort.Value);
-            LogInfo($"TCP Push bağlantısı açıldı ({ip}:{numPushPort.Value}).");
+            await _tcpPush.ConnectAsync(ip, pushPort);
+            LogInfo($"TCP Push bağlantısı açıldı ({ip}:{pushPort}).");
 
             _tcpPull = new TcpClient();
             await _tcpPull.ConnectAsync(ip, (int)numPullPort.Value);

@@ -390,6 +390,7 @@ namespace BaylanModemTest
             // numPushPort
             // 
             this.numPushPort.Dock = System.Windows.Forms.DockStyle.Left;
+            this.numPushPort.Enabled = false;
             this.numPushPort.Location = new System.Drawing.Point(178, 32);
             this.numPushPort.Maximum = new decimal(new int[] {
             65535,
