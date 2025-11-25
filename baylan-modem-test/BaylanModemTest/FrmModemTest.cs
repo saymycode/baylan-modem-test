@@ -29,6 +29,7 @@ namespace BaylanModemTest
         private readonly StringBuilder _serialBuffer = new StringBuilder();
         private StepExpectation _pendingExpectation;
         private TaskCompletionSource<string> _pendingSerialResponse;
+        private TestStep _currentStep;
 
         private readonly ConcurrentQueue<string> _incomingMessages = new ConcurrentQueue<string>();
 
@@ -92,12 +93,13 @@ namespace BaylanModemTest
                 LogInfo("Test başladı.");
 
                 await OpenConnectionsAsync(ct);
-                await ListenTcpAsync(ct);
+
                 for (int i = 0; i < _steps.Count; i++)
                 {
                     ct.ThrowIfCancellationRequested();
 
                     var step = _steps[i];
+                    _currentStep = step;      
                     step.SetRunning();
                     lblCurrentStep.Text = $"Şu an: {step.Name}";
                     overallProgress.Value = (int)((i / (double)_steps.Count) * 100);
@@ -108,7 +110,7 @@ namespace BaylanModemTest
                     {
                         step.SetFail("Hata");
                         LogError($"Adım {step.Name} başarısız. Test durdu.");
-                        StopAll("Test hata ile durdu.", true);
+                        StopAll("Test hata ile durdu.", false);
                         return;
                     }
 
@@ -126,13 +128,15 @@ namespace BaylanModemTest
             }
             catch (OperationCanceledException)
             {
+                _currentStep?.SetFail("Hata");
                 LogInfo("Test iptal edildi.");
-                StopAll("İptal.", true);
+                StopAll("İptal.", false);
             }
             catch (Exception ex)
             {
+                _currentStep?.SetFail("Hata");
                 LogError("Beklenmeyen hata: " + ex.Message);
-                StopAll("Hata.", true);
+                StopAll("Hata.", false);
             }
         }
         private class StepCommandPlanItem
@@ -518,7 +522,7 @@ namespace BaylanModemTest
 
             _listenerCts = CancellationTokenSource.CreateLinkedTokenSource(ct);
 
-            //_tcpListenerTask = Task.Run(() => ListenTcpAsync(_listenerCts.Token), ct);
+            _tcpListenerTask = Task.Run(() => ListenTcpAsync(_listenerCts.Token), ct);
 
             var ipText = txtTcpIp.Text?.Trim();
             if (string.IsNullOrWhiteSpace(ipText))
