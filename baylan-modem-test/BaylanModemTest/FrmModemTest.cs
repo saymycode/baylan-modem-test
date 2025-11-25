@@ -92,7 +92,7 @@ namespace BaylanModemTest
                 LogInfo("Test başladı.");
 
                 await OpenConnectionsAsync(ct);
-
+                await ListenTcpAsync(ct);
                 for (int i = 0; i < _steps.Count; i++)
                 {
                     ct.ThrowIfCancellationRequested();
@@ -518,7 +518,7 @@ namespace BaylanModemTest
 
             _listenerCts = CancellationTokenSource.CreateLinkedTokenSource(ct);
 
-            _tcpListenerTask = Task.Run(() => ListenTcpAsync(_listenerCts.Token), ct);
+            //_tcpListenerTask = Task.Run(() => ListenTcpAsync(_listenerCts.Token), ct);
 
             var ipText = txtTcpIp.Text?.Trim();
             if (string.IsNullOrWhiteSpace(ipText))
@@ -531,9 +531,9 @@ namespace BaylanModemTest
             await _tcpPush.ConnectAsync(ip, pushPort);
             LogInfo($"TCP Push bağlantısı açıldı ({ip}:{pushPort}).");
 
-            _tcpPull = new TcpClient();
-            await _tcpPull.ConnectAsync(ip, (int)numPullPort.Value);
-            LogInfo($"TCP Pull bağlantısı açıldı ({ip}:{numPullPort.Value}).");
+            //_tcpPull = new TcpClient();
+            //await _tcpPull.ConnectAsync(ip, (int)numPullPort.Value);
+            //LogInfo($"TCP Pull bağlantısı açıldı ({ip}:{numPullPort.Value}).");
         }
 
         private async Task<string> SendAndReceiveAsync(string cmd, StepExpectation expectation, CancellationToken ct)
