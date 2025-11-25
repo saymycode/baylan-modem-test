@@ -183,16 +183,23 @@ namespace BaylanModemTest
 
         private List<StepCommandPlanItem> GetStepCommandPlan(int stepNo)
         {
-            return stepNo switch
+            switch (stepNo)
             {
-                1 => BuildWakeStepPlan(),
-                2 => BuildRelayStepPlan(),
-                3 => BuildMeterAddStepPlan(),
-                4 => BuildMeterReadStepPlan(),
-                5 => BuildFinalizeStepPlan(),
-                _ => new List<StepCommandPlanItem>()
-            };
+                case 1:
+                    return BuildWakeStepPlan();
+                case 2:
+                    return BuildRelayStepPlan();
+                case 3:
+                    return BuildMeterAddStepPlan();
+                case 4:
+                    return BuildMeterReadStepPlan();
+                case 5:
+                    return BuildFinalizeStepPlan();
+                default:
+                    return new List<StepCommandPlanItem>();
+            }
         }
+
 
         private List<StepCommandPlanItem> BuildWakeStepPlan()
         {
@@ -513,19 +520,19 @@ namespace BaylanModemTest
 
             //_tcpListenerTask = Task.Run(() => ListenTcpAsync(_listenerCts.Token), ct);
 
-            //var ipText = txtTcpIp.Text?.Trim();
-            //if (string.IsNullOrWhiteSpace(ipText))
-            //    throw new InvalidOperationException("TCP IP boş olamaz.");
+            var ipText = txtTcpIp.Text?.Trim();
+            if (string.IsNullOrWhiteSpace(ipText))
+                throw new InvalidOperationException("TCP IP boş olamaz.");
 
-            //var ip = IPAddress.Parse(ipText);
+            var ip = IPAddress.Parse(ipText);
 
-            //_tcpPush = new TcpClient();
-            //await _tcpPush.ConnectAsync(ip, (int)numPushPort.Value);
-            //LogInfo($"TCP Push bağlantısı açıldı ({ip}:{numPushPort.Value}).");
+            _tcpPush = new TcpClient();
+            await _tcpPush.ConnectAsync(ip, (int)numPushPort.Value);
+            LogInfo($"TCP Push bağlantısı açıldı ({ip}:{numPushPort.Value}).");
 
-            //_tcpPull = new TcpClient();
-            //await _tcpPull.ConnectAsync(ip, (int)numPullPort.Value);
-            //LogInfo($"TCP Pull bağlantısı açıldı ({ip}:{numPullPort.Value}).");
+            _tcpPull = new TcpClient();
+            await _tcpPull.ConnectAsync(ip, (int)numPullPort.Value);
+            LogInfo($"TCP Pull bağlantısı açıldı ({ip}:{numPullPort.Value}).");
         }
 
         private async Task<string> SendAndReceiveAsync(string cmd, StepExpectation expectation, CancellationToken ct)
