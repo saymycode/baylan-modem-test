@@ -232,8 +232,8 @@ namespace BaylanModemTest
                     BuildMeterAddCommand(meterSerialToAdd),
                     new StepExpectation("MSGNF:DEVICE_RECORD_ACCEPTED", new Dictionary<string, string>
                     {
-                        {"DSRNO", meterSerialToAdd},
-                        {"DFLAG", GetMeterFlag()}
+                        {"<1F>#<1F>DSRNO", meterSerialToAdd},
+                        {"<1F>#<1F>DFLAG", GetMeterFlag()}
                     }),
                     useTcp: true
                 )
@@ -625,12 +625,14 @@ namespace BaylanModemTest
             PrepareForExpectedResponse(expectation);
 
             var buffer = Encoding.ASCII.GetBytes(cmd);
+            var txHex = BitConverter.ToString(buffer).Replace("-", " ");
+            LogTx($"TX HEX: {txHex}");
             await _tcpPush.GetStream().WriteAsync(buffer, 0, buffer.Length, ct);
 
             return await WaitForExpectedTcpResponseAsync(ct);
         }
 
-     
+
 
         private async Task HandleTcpClientAsync(TcpClient client, CancellationToken token)
         {
@@ -653,10 +655,27 @@ namespace BaylanModemTest
                             if (read <= 0)
                                 break;
 
-                            var text = Encoding.UTF8.GetString(buffer, 0, read);
-                            _incomingMessages.Enqueue(text);
-                            LogRx(text);
-                            TryCompletePending(text);
+                            var raw = new byte[read];
+                            Buffer.BlockCopy(buffer, 0, raw, 0, read);
+
+                            // HEX log (gerçek veri bu)
+                            var hex = BitConverter.ToString(raw).Replace("-", " ");
+                            LogRx($"RX HEX: {hex}");
+
+                            // Görsel ASCII log (debug için)
+                            var sb = new StringBuilder();
+                            foreach (var b in raw)
+                            {
+                                if (b >= 32 && b <= 126)
+                                    sb.Append((char)b);
+                                else
+                                    sb.Append($"<{b:X2}>");
+                            }
+                            LogRx($"RX VIS: {sb}");
+
+                            // Parsing için istersen HEX veya ham byte bazlı ilerle
+                            _incomingMessages.Enqueue(sb.ToString());
+                            TryCompletePending(sb.ToString());
                         }
                     }
                 }
@@ -667,6 +686,8 @@ namespace BaylanModemTest
                 }
             }
         }
+
+
 
         private async Task<string> WaitForExpectedResponseAsync(CancellationToken ct)
         {
