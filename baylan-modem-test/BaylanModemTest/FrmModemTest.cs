@@ -100,13 +100,13 @@ namespace BaylanModemTest
                     if (!ok)
                     {
                         step.SetFail("Hata");
-                        LogError($"Adım {step.Name} başarısız. Test durdu.");
+                        LogError($"Test {step.Name}'nde başarısız oldu. Test durdu.");
                         StopAll("Test hata ile durdu.", false);
                         return;
                     }
 
                     step.SetPass();
-                    LogInfo($"Adım {step.Name} geçti.");
+                    LogInfo($"{step.Name} adımı tamamlandı.");
 
                     // --- ADIM TAMAMLANDI → 5-10 sn bekleme ---
                     await Task.Delay(7000, ct);  // 7 saniye (ister 5000–10000 arası yaparsın)
@@ -257,7 +257,7 @@ namespace BaylanModemTest
                         {"<1F>#<1F>DFLAG", GetMeterFlag()}
                     }),
                     useTcp: true,
-                    delayBefore: TimeSpan.FromSeconds(15),
+                    delayBefore: TimeSpan.FromSeconds(30),
                     ensureListenerBeforeSend: true
                 )
             };
@@ -602,7 +602,7 @@ namespace BaylanModemTest
 
             _tcpPull = new TcpListener(IPAddress.Any, _settings.PullPort);
             _tcpPull.Start();
-            LogInfo($"TCP Pull dinleyici başlatıldı (Port: {_settings.PullPort}).");
+            //LogInfo($"TCP Pull dinleyici başlatıldı (Port: {_settings.PullPort}).");
 
             _tcpListenerTask = Task.Run(() => AcceptPullClientAsync(_tcpPull, token));
         }
@@ -614,7 +614,7 @@ namespace BaylanModemTest
                 while (!token.IsCancellationRequested)
                 {
                     var client = await listener.AcceptTcpClientAsync();
-                    LogInfo("TCP Pull client bağlandı.");
+                    //LogInfo("TCP Pull client bağlandı.");
                     _ = Task.Run(() => HandleTcpClientAsync(client, token));
                 }
             }
@@ -631,8 +631,8 @@ namespace BaylanModemTest
 
         private async Task EnsureTcpPushConnectedAsync(CancellationToken ct)
         {
-            if (IsTcpClientConnected(_tcpPush))
-                return;
+            //if (IsTcpClientConnected(_tcpPush))
+            //    return;
 
             var ipText = _settings.TcpIp?.Trim();
             if (string.IsNullOrWhiteSpace(ipText))
@@ -649,7 +649,7 @@ namespace BaylanModemTest
             var message = hadClient
                 ? $"TCP Push bağlantısı yeniden kuruldu ({ip}:{_settings.PushPort})."
                 : $"TCP Push bağlantısı açıldı ({ip}:{_settings.PushPort}).";
-            LogInfo(message);
+            //LogInfo(message);
         }
 
         private bool IsTcpClientConnected(TcpClient client)
@@ -685,13 +685,13 @@ namespace BaylanModemTest
         private async Task<string> SendAndReceiveTcpAsync(string cmd, StepExpectation expectation, CancellationToken ct)
         {
             await EnsureTcpPushConnectedAsync(ct);
-
             ClearIncomingMessages();
 
             PrepareForExpectedResponse(expectation);
 
             var buffer = Encoding.ASCII.GetBytes(cmd);
             var txHex = BitConverter.ToString(buffer).Replace("-", " ");
+            await Task.Delay(3000);
             LogTx($"TX HEX: {txHex}");
             await _tcpPush.GetStream().WriteAsync(buffer, 0, buffer.Length, ct);
             return await WaitForExpectedTcpResponseAsync(ct);
@@ -725,7 +725,7 @@ namespace BaylanModemTest
 
                             // HEX log (gerçek veri bu)
                             var hex = BitConverter.ToString(raw).Replace("-", " ");
-                            LogRx($"RX HEX: {hex}");
+                            //LogRx($"RX HEX: {hex}");
 
                             // Görsel ASCII log (debug için)
                             var sb = new StringBuilder();
