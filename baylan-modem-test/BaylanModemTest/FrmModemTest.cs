@@ -230,10 +230,10 @@ namespace BaylanModemTest
             {
                 new StepCommandPlanItem(
                     BuildMeterAddCommand(meterSerialToAdd),
-                    new StepExpectation("MTRADDED", new Dictionary<string, string>
+                    new StepExpectation("MSGNF:DEVICE_RECORD_ACCEPTED", new Dictionary<string, string>
                     {
-                        {"RESULT", "OK"},
-                        {"METER", meterSerialToAdd}
+                        {"DSRNO", meterSerialToAdd},
+                        {"DFLAG", GetMeterFlag()}
                     }),
                     useTcp: true
                 )
@@ -247,10 +247,9 @@ namespace BaylanModemTest
             {
                 new StepCommandPlanItem(
                     BuildMeterReadCommand(meterSerialToRead),
-                    new StepExpectation("MTRDATA", new Dictionary<string, string>
+                    new StepExpectation(meterSerialToRead, new Dictionary<string, string>
                     {
-                        {"METER", meterSerialToRead},
-                        {"STATUS", "OK"}
+                        {"MSGNF", "METER_OBIS_OR_OBIS_PACKAGE_READ"}
                     }),
                     useTcp: true
                 )
@@ -292,12 +291,68 @@ namespace BaylanModemTest
 
         private string BuildMeterAddCommand(string meterSerial)
         {
-            return $"AT+MTRADD={meterSerial}\r\n";
+            var meterFlag = GetMeterFlag();
+
+            return "#\x1C" +
+                   "#\x1D" +
+                   "#\x1F" +
+                   "QTYPE:DEVICE_RECORD$\x1F" +
+                   "#\x1F" +
+                   "OSREC:1$\x1F$" +
+                   "\x1D" +
+                   "#\x1E" +
+                   "#\x1F" +
+                   "OADUN:admin$\x1F" +
+                   "#\x1F" +
+                   "OADPW:12345678$\x1F" +
+                   "#\x1F" +
+                   "DEVNO:00000003$\x1F" +
+                   "#\x1F" +
+                   $"DSRNO:{meterSerial}$\x1F" +
+                   "#\x1F" +
+                   $"DFLAG:{meterFlag}$\x1F" +
+                   "#\x1F" +
+                   "DSREN:1$\x1F" +
+                   "#\x1F" +
+                   "DFLEN:1$\x1F" +
+                   "#\x1F" +
+                   "DUART:1$\x1F" +
+                   "#\x1F" +
+                   "DMXSP:9$\x1F" +
+                   "#\x1F" +
+                   "QANSD:1$\x1F$" +
+                   "\x1E" +
+                   "$\x1C";
         }
 
         private string BuildMeterReadCommand(string meterSerial)
         {
-            return $"AT+MTRRD={meterSerial}\r\n";
+            var meterFlag = GetMeterFlag();
+
+            return "#\x1C" +
+                   "#\x1D" +
+                   "#\x1F" +
+                   "QTYPE:INSTANT$\x1F$" +
+                   "\x1D" +
+                   "#\x1E" +
+                   "#\x1F" +
+                   $"DSRNO:{meterSerial}$\x1F" +
+                   "#\x1F" +
+                   "DSREN:0$\x1F" +
+                   "#\x1F" +
+                   $"DFLAG:{meterFlag}$\x1F" +
+                   "#\x1F" +
+                   "DFLEN:0$\x1F" +
+                   "#\x1F" +
+                   "QANSD:1$\x1F" +
+                   "#\x1F" +
+                   "QRDTP:1$\x1F" +
+                   "#\x1F" +
+                   "QOBST:0.0.0,1.8.0,5.8.0,8.8.0$\x1F" +
+                   "#\x1F" +
+                   "DMXSP:5$\x1F$" +
+                   "\x1E" +
+                   "$\x1C";
         }
 
         private string GetMeterSerialNumber()
@@ -368,12 +423,12 @@ namespace BaylanModemTest
         private Dictionary<string, string> ParseFields(string rx)
         {
             var result = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-            var separators = new[] { ';', '\n', '\r' };
+            var separators = new[] { ';', '\n', '\r', '\x1F', '$', '\x1E', '\x1D', '\x1C' };
             var parts = rx.Split(separators, StringSplitOptions.RemoveEmptyEntries);
 
             foreach (var part in parts)
             {
-                var trimmed = part.Trim();
+                var trimmed = part.Trim().Trim('#');
                 if (string.IsNullOrEmpty(trimmed))
                     continue;
 
