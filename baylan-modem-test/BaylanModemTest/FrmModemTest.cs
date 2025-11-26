@@ -8,6 +8,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -882,7 +883,42 @@ namespace BaylanModemTest
         private void LogInfo(string msg) => AppendLog("INFO", msg, Color.Gray);
         private void LogError(string msg) => AppendLog("ERR ", msg, Color.IndianRed);
         private void LogTx(string msg) => AppendLog("TX  ", msg.Trim(), Color.DeepSkyBlue);
-        private void LogRx(string msg) => AppendLog("RX  ", msg.Trim(), Color.LightGreen);
+        private void LogRx(string msg)
+        {
+            var trimmed = msg?.Trim();
+            if (ShouldSuppressRxLog(trimmed))
+                return;
+
+            AppendLog("RX  ", trimmed, Color.LightGreen);
+        }
+
+        private bool ShouldSuppressRxLog(string msg)
+        {
+            if (string.IsNullOrWhiteSpace(msg))
+                return true;
+
+            var trimmed = msg.Trim();
+
+            if (string.IsNullOrWhiteSpace(trimmed.Trim('?')))
+                return true;
+
+            var placeholderCount = Regex.Matches(trimmed, "<(?i:[0-9a-f]{2})>").Count;
+            if (placeholderCount >= 5)
+            {
+                var hasKnownMarkers = trimmed.IndexOf("MSGTP", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                                      trimmed.IndexOf("MSGNF", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                                      trimmed.IndexOf("OSERN", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                                      trimmed.IndexOf("OSIMN", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                                      trimmed.IndexOf("OIMEI", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                                      trimmed.IndexOf("REFNO", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                                      trimmed.IndexOf("QRYHD", StringComparison.OrdinalIgnoreCase) >= 0;
+
+                if (!hasKnownMarkers)
+                    return true;
+            }
+
+            return false;
+        }
 
         private void AppendLog(string tag, string msg, Color color)
         {
