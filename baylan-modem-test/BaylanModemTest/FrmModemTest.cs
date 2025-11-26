@@ -568,36 +568,82 @@ namespace BaylanModemTest
 
             _listenerCts = CancellationTokenSource.CreateLinkedTokenSource(ct);
 
+            EnsureTcpPullListenerStarted(_listenerCts.Token);
+
+            await EnsureTcpPushConnectedAsync(ct);
+
+        }
+
+        private void EnsureTcpPullListenerStarted(CancellationToken token)
+        {
+            if (_tcpPull != null)
+                return;
+
+            _tcpPull = new TcpListener(IPAddress.Any, _settings.PullPort);
+            _tcpPull.Start();
+            LogInfo($"TCP Pull dinleyici başlatıldı (Port: {_settings.PullPort}).");
+
+            _tcpListenerTask = Task.Run(() => AcceptPullClientAsync(_tcpPull, token));
+        }
+
+        private async Task AcceptPullClientAsync(TcpListener listener, CancellationToken token)
+        {
+            try
+            {
+                while (!token.IsCancellationRequested)
+                {
+                    var client = await listener.AcceptTcpClientAsync();
+                    LogInfo("TCP Pull client bağlandı.");
+                    _ = Task.Run(() => HandleTcpClientAsync(client, token));
+                }
+            }
+            catch (ObjectDisposedException) when (token.IsCancellationRequested)
+            {
+                // Beklenen iptal: durdururken listener kapanıyor
+            }
+            catch (Exception ex)
+            {
+                if (!token.IsCancellationRequested)
+                    LogError("TCP Pull accept hatası: " + ex.Message);
+            }
+        }
+
+        private async Task EnsureTcpPushConnectedAsync(CancellationToken ct)
+        {
+            if (IsTcpClientConnected(_tcpPush))
+                return;
+
             var ipText = _settings.TcpIp?.Trim();
             if (string.IsNullOrWhiteSpace(ipText))
                 throw new InvalidOperationException("TCP IP boş olamaz.");
 
             var ip = IPAddress.Parse(ipText);
+            bool hadClient = _tcpPush != null;
+
+            try { _tcpPush?.Close(); } catch { }
 
             _tcpPush = new TcpClient();
             await _tcpPush.ConnectAsync(ip, _settings.PushPort);
-            LogInfo($"TCP Push bağlantısı açıldı ({ip}:{_settings.PushPort}).");
 
-            _tcpPull = new TcpListener(IPAddress.Any, _settings.PullPort);
-            _tcpPull.Start();
-            LogInfo($"TCP Pull dinleyici başlatıldı (Port: {_settings.PullPort}).");
-            _ = Task.Run(() => AcceptPullClientAsync(_tcpPull));
-
+            var message = hadClient
+                ? $"TCP Push bağlantısı yeniden kuruldu ({ip}:{_settings.PushPort})."
+                : $"TCP Push bağlantısı açıldı ({ip}:{_settings.PushPort}).";
+            LogInfo(message);
         }
-        private async Task AcceptPullClientAsync(TcpListener listener)
+
+        private bool IsTcpClientConnected(TcpClient client)
         {
+            if (client == null)
+                return false;
+
             try
             {
-                while (true)
-                {
-                    var client = await listener.AcceptTcpClientAsync();
-                    LogInfo("TCP Pull client bağlandı.");
-                    _ = Task.Run(() => HandleTcpClientAsync(client, CancellationToken.None));
-                }
+                return client.Connected &&
+                       !(client.Client.Poll(0, SelectMode.SelectRead) && client.Client.Available == 0);
             }
-            catch (Exception ex)
+            catch
             {
-                LogError("TCP Pull accept hatası: " + ex.Message);
+                return false;
             }
         }
 
@@ -617,8 +663,7 @@ namespace BaylanModemTest
 
         private async Task<string> SendAndReceiveTcpAsync(string cmd, StepExpectation expectation, CancellationToken ct)
         {
-            if (_tcpPush == null || !_tcpPush.Connected)
-                throw new InvalidOperationException("TCP bağlantıları hazır değil.");
+            await EnsureTcpPushConnectedAsync(ct);
 
             ClearIncomingMessages();
 
