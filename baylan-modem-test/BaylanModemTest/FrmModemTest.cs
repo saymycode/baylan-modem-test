@@ -135,14 +135,24 @@ namespace BaylanModemTest
             public string Cmd { get; }
             public StepExpectation Expectation { get; }
             public bool UseTcp { get; }
+            public TimeSpan DelayBefore { get; }
             public TimeSpan DelayAfter { get; }
+            public bool EnsureListenerBeforeSend { get; }
 
-            public StepCommandPlanItem(string cmd, StepExpectation exp, bool useTcp = false, TimeSpan? delayAfter = null)
+            public StepCommandPlanItem(
+                string cmd,
+                StepExpectation exp,
+                bool useTcp = false,
+                TimeSpan? delayAfter = null,
+                TimeSpan? delayBefore = null,
+                bool ensureListenerBeforeSend = false)
             {
                 Cmd = cmd;
                 Expectation = exp;
                 UseTcp = useTcp;
                 DelayAfter = delayAfter ?? TimeSpan.Zero;
+                DelayBefore = delayBefore ?? TimeSpan.Zero;
+                EnsureListenerBeforeSend = ensureListenerBeforeSend;
             }
         }
 
@@ -153,6 +163,17 @@ namespace BaylanModemTest
             foreach (var item in plan)
             {
                 ct.ThrowIfCancellationRequested();
+
+                if (item.EnsureListenerBeforeSend)
+                {
+                    EnsureTcpPullListenerStarted(_listenerCts?.Token ?? CancellationToken.None);
+                }
+
+                if (item.DelayBefore > TimeSpan.Zero)
+                {
+                    LogInfo($"Komut öncesi {item.DelayBefore.TotalSeconds:0.#} saniye bekleniyor.");
+                    await Task.Delay(item.DelayBefore, ct);
+                }
 
                 LogTx(item.Cmd);
                 string rx = item.UseTcp
@@ -235,7 +256,9 @@ namespace BaylanModemTest
                         {"<1F>#<1F>DSRNO", meterSerialToAdd},
                         {"<1F>#<1F>DFLAG", GetMeterFlag()}
                     }),
-                    useTcp: true
+                    useTcp: true,
+                    delayBefore: TimeSpan.FromSeconds(15),
+                    ensureListenerBeforeSend: true
                 )
             };
         }
@@ -251,7 +274,8 @@ namespace BaylanModemTest
                     {
                         {"<1F>#<1E>#<1F>MSGNF", "METER_OBIS_OR_OBIS_PACKAGE_READ"}
                     }),
-                    useTcp: true
+                    useTcp: true,
+                    delayBefore: TimeSpan.FromSeconds(15)
                 )
             };
         }
@@ -669,7 +693,6 @@ namespace BaylanModemTest
             var buffer = Encoding.ASCII.GetBytes(cmd);
             var txHex = BitConverter.ToString(buffer).Replace("-", " ");
             LogTx($"TX HEX: {txHex}");
-            await Task.Delay(TimeSpan.FromSeconds(15), ct);
             await _tcpPush.GetStream().WriteAsync(buffer, 0, buffer.Length, ct);
             return await WaitForExpectedTcpResponseAsync(ct);
         }
