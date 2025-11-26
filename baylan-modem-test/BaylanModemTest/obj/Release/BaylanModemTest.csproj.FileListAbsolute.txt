@@ -1,0 +1,11 @@
+D:\Git\baylan-modem-test\baylan-modem-test\baylan-modem-test\BaylanModemTest\bin\Release\BaylanModemTest.exe.config
+D:\Git\baylan-modem-test\baylan-modem-test\baylan-modem-test\BaylanModemTest\bin\Release\BaylanModemTest.exe
+D:\Git\baylan-modem-test\baylan-modem-test\baylan-modem-test\BaylanModemTest\bin\Release\BaylanModemTest.pdb
+D:\Git\baylan-modem-test\baylan-modem-test\baylan-modem-test\BaylanModemTest\obj\Release\BaylanModemTest.csproj.AssemblyReference.cache
+D:\Git\baylan-modem-test\baylan-modem-test\baylan-modem-test\BaylanModemTest\obj\Release\BaylanModemTest.FrmModemTest.resources
+D:\Git\baylan-modem-test\baylan-modem-test\baylan-modem-test\BaylanModemTest\obj\Release\BaylanModemTest.FrmSettings.resources
+D:\Git\baylan-modem-test\baylan-modem-test\baylan-modem-test\BaylanModemTest\obj\Release\BaylanModemTest.Properties.Resources.resources
+D:\Git\baylan-modem-test\baylan-modem-test\baylan-modem-test\BaylanModemTest\obj\Release\BaylanModemTest.csproj.GenerateResource.cache
+D:\Git\baylan-modem-test\baylan-modem-test\baylan-modem-test\BaylanModemTest\obj\Release\BaylanModemTest.csproj.CoreCompileInputs.cache
+D:\Git\baylan-modem-test\baylan-modem-test\baylan-modem-test\BaylanModemTest\obj\Release\BaylanModemTest.exe
+D:\Git\baylan-modem-test\baylan-modem-test\baylan-modem-test\BaylanModemTest\obj\Release\BaylanModemTest.pdb

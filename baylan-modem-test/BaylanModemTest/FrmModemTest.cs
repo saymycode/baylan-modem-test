@@ -172,7 +172,7 @@ namespace BaylanModemTest
 
                 if (item.DelayBefore > TimeSpan.Zero)
                 {
-                    LogInfo($"Komut öncesi {item.DelayBefore.TotalSeconds:0.#} saniye bekleniyor.");
+                    //LogInfo($"Komut öncesi {item.DelayBefore.TotalSeconds:0.#} saniye bekleniyor.");
                     await Task.Delay(item.DelayBefore, ct);
                 }
 
@@ -189,7 +189,7 @@ namespace BaylanModemTest
 
                 if (item.DelayAfter > TimeSpan.Zero)
                 {
-                    LogInfo($"Sonraki komut öncesi {item.DelayAfter.TotalSeconds:0.#} saniye bekleniyor.");
+                    //LogInfo($"Sonraki komut öncesi {item.DelayAfter.TotalSeconds:0.#} saniye bekleniyor.");
                     await Task.Delay(item.DelayAfter, ct);
                 }
             }
@@ -258,7 +258,7 @@ namespace BaylanModemTest
                         {"<1F>#<1F>DFLAG", GetMeterFlag()}
                     }),
                     useTcp: true,
-                    delayBefore: TimeSpan.FromSeconds(30),
+                    delayBefore: TimeSpan.FromSeconds(10),
                     ensureListenerBeforeSend: true
                 )
             };
@@ -276,7 +276,7 @@ namespace BaylanModemTest
                         {"<1F>#<1E>#<1F>MSGNF", "METER_OBIS_OR_OBIS_PACKAGE_READ"}
                     }),
                     useTcp: true,
-                    delayBefore: TimeSpan.FromSeconds(15)
+                    delayBefore: TimeSpan.FromSeconds(5)
                 )
             };
         }
@@ -693,7 +693,7 @@ namespace BaylanModemTest
             var buffer = Encoding.ASCII.GetBytes(cmd);
             var txHex = BitConverter.ToString(buffer).Replace("-", " ");
             await Task.Delay(3000);
-            LogTx($"TX HEX: {txHex}");
+            //LogTx($"TX HEX: {txHex}");
             await _tcpPush.GetStream().WriteAsync(buffer, 0, buffer.Length, ct);
             return await WaitForExpectedTcpResponseAsync(ct);
         }
@@ -881,15 +881,15 @@ namespace BaylanModemTest
         }
 
         private void LogInfo(string msg) => AppendLog("INFO", msg, Color.Gray);
-        private void LogError(string msg) => AppendLog("ERR ", msg, Color.IndianRed);
-        private void LogTx(string msg) => AppendLog("TX  ", msg.Trim(), Color.DeepSkyBlue);
+        private void LogError(string msg) => AppendLog("ERR ", msg, Color.Red);
+        private void LogTx(string msg) => AppendLog("TX  ", msg.Trim(), Color.Blue);
         private void LogRx(string msg)
         {
             var trimmed = msg?.Trim();
             if (ShouldSuppressRxLog(trimmed))
                 return;
 
-            AppendLog("RX  ", trimmed, Color.LightGreen);
+            AppendLog("RX  ", trimmed, Color.Green);
         }
 
         private bool ShouldSuppressRxLog(string msg)

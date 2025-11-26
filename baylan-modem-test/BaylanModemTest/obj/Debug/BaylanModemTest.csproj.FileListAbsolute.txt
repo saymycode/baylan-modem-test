@@ -7,4 +7,5 @@ D:\Git\baylan-modem-test\baylan-modem-test\baylan-modem-test\BaylanModemTest\bin
 D:\Git\baylan-modem-test\baylan-modem-test\baylan-modem-test\BaylanModemTest\bin\Debug\BaylanModemTest.pdb
 D:\Git\baylan-modem-test\baylan-modem-test\baylan-modem-test\BaylanModemTest\obj\Debug\BaylanModemTest.exe
 D:\Git\baylan-modem-test\baylan-modem-test\baylan-modem-test\BaylanModemTest\obj\Debug\BaylanModemTest.pdb
+D:\Git\baylan-modem-test\baylan-modem-test\baylan-modem-test\BaylanModemTest\obj\Debug\BaylanModemTest.FrmSettings.resources
 D:\Git\baylan-modem-test\baylan-modem-test\baylan-modem-test\BaylanModemTest\obj\Debug\BaylanModemTest.csproj.AssemblyReference.cache

@@ -17,6 +17,7 @@ namespace BaylanModemTest
 
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FrmModemTest));
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.settingsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mainLayout = new System.Windows.Forms.TableLayoutPanel();
@@ -66,14 +67,14 @@ namespace BaylanModemTest
             this.settingsMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(1400, 28);
+            this.menuStrip1.Size = new System.Drawing.Size(1400, 24);
             this.menuStrip1.TabIndex = 1;
             this.menuStrip1.Text = "menuStrip1";
             // 
             // settingsMenuItem
             // 
             this.settingsMenuItem.Name = "settingsMenuItem";
-            this.settingsMenuItem.Size = new System.Drawing.Size(67, 24);
+            this.settingsMenuItem.Size = new System.Drawing.Size(56, 20);
             this.settingsMenuItem.Text = "Ayarlar";
             this.settingsMenuItem.Click += new System.EventHandler(this.settingsMenuItem_Click);
             // 
@@ -84,12 +85,12 @@ namespace BaylanModemTest
             this.mainLayout.Controls.Add(this.headerLayout, 0, 0);
             this.mainLayout.Controls.Add(this.middleLayout, 0, 1);
             this.mainLayout.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.mainLayout.Location = new System.Drawing.Point(0, 28);
+            this.mainLayout.Location = new System.Drawing.Point(0, 24);
             this.mainLayout.Name = "mainLayout";
             this.mainLayout.RowCount = 2;
-            this.mainLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 160F));
+            this.mainLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 139F));
             this.mainLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.mainLayout.Size = new System.Drawing.Size(1400, 822);
+            this.mainLayout.Size = new System.Drawing.Size(1400, 665);
             this.mainLayout.TabIndex = 0;
             // 
             // headerLayout
@@ -105,7 +106,7 @@ namespace BaylanModemTest
             this.headerLayout.Name = "headerLayout";
             this.headerLayout.RowCount = 1;
             this.headerLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.headerLayout.Size = new System.Drawing.Size(1380, 145);
+            this.headerLayout.Size = new System.Drawing.Size(1380, 124);
             this.headerLayout.TabIndex = 0;
             // 
             // startStopLayout
@@ -120,7 +121,7 @@ namespace BaylanModemTest
             this.startStopLayout.RowCount = 2;
             this.startStopLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.startStopLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.startStopLayout.Size = new System.Drawing.Size(546, 139);
+            this.startStopLayout.Size = new System.Drawing.Size(546, 118);
             this.startStopLayout.TabIndex = 0;
             // 
             // btnStart
@@ -130,7 +131,7 @@ namespace BaylanModemTest
             this.btnStart.Font = new System.Drawing.Font("Segoe UI", 18F, System.Drawing.FontStyle.Bold);
             this.btnStart.Location = new System.Drawing.Point(3, 3);
             this.btnStart.Name = "btnStart";
-            this.btnStart.Size = new System.Drawing.Size(540, 63);
+            this.btnStart.Size = new System.Drawing.Size(540, 53);
             this.btnStart.TabIndex = 0;
             this.btnStart.Text = "TESTİ BAŞLAT";
             this.btnStart.UseVisualStyleBackColor = false;
@@ -141,9 +142,9 @@ namespace BaylanModemTest
             this.btnStop.BackColor = System.Drawing.Color.LightCoral;
             this.btnStop.Dock = System.Windows.Forms.DockStyle.Fill;
             this.btnStop.Font = new System.Drawing.Font("Segoe UI", 18F, System.Drawing.FontStyle.Bold);
-            this.btnStop.Location = new System.Drawing.Point(3, 72);
+            this.btnStop.Location = new System.Drawing.Point(3, 62);
             this.btnStop.Name = "btnStop";
-            this.btnStop.Size = new System.Drawing.Size(540, 64);
+            this.btnStop.Size = new System.Drawing.Size(540, 53);
             this.btnStop.TabIndex = 1;
             this.btnStop.Text = "DURDUR";
             this.btnStop.UseVisualStyleBackColor = false;
@@ -161,7 +162,7 @@ namespace BaylanModemTest
             this.statusLayout.RowCount = 2;
             this.statusLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 55F));
             this.statusLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 45F));
-            this.statusLayout.Size = new System.Drawing.Size(822, 139);
+            this.statusLayout.Size = new System.Drawing.Size(822, 118);
             this.statusLayout.TabIndex = 1;
             // 
             // lblCurrentStep
@@ -171,7 +172,7 @@ namespace BaylanModemTest
             this.lblCurrentStep.Font = new System.Drawing.Font("Segoe UI", 18F, System.Drawing.FontStyle.Bold);
             this.lblCurrentStep.Location = new System.Drawing.Point(3, 0);
             this.lblCurrentStep.Name = "lblCurrentStep";
-            this.lblCurrentStep.Size = new System.Drawing.Size(816, 76);
+            this.lblCurrentStep.Size = new System.Drawing.Size(816, 64);
             this.lblCurrentStep.TabIndex = 0;
             this.lblCurrentStep.Text = "Şu an: Bekliyor";
             this.lblCurrentStep.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -179,9 +180,9 @@ namespace BaylanModemTest
             // overallProgress
             // 
             this.overallProgress.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.overallProgress.Location = new System.Drawing.Point(3, 79);
+            this.overallProgress.Location = new System.Drawing.Point(3, 67);
             this.overallProgress.Name = "overallProgress";
-            this.overallProgress.Size = new System.Drawing.Size(816, 57);
+            this.overallProgress.Size = new System.Drawing.Size(816, 48);
             this.overallProgress.TabIndex = 1;
             // 
             // middleLayout
@@ -192,12 +193,12 @@ namespace BaylanModemTest
             this.middleLayout.Controls.Add(this.grpSteps, 0, 0);
             this.middleLayout.Controls.Add(this.grpLog, 1, 0);
             this.middleLayout.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.middleLayout.Location = new System.Drawing.Point(10, 175);
-            this.middleLayout.Margin = new System.Windows.Forms.Padding(10, 10, 10, 10);
+            this.middleLayout.Location = new System.Drawing.Point(10, 149);
+            this.middleLayout.Margin = new System.Windows.Forms.Padding(10);
             this.middleLayout.Name = "middleLayout";
             this.middleLayout.RowCount = 1;
             this.middleLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.middleLayout.Size = new System.Drawing.Size(1380, 637);
+            this.middleLayout.Size = new System.Drawing.Size(1380, 506);
             this.middleLayout.TabIndex = 1;
             // 
             // grpSteps
@@ -208,7 +209,7 @@ namespace BaylanModemTest
             this.grpSteps.Location = new System.Drawing.Point(3, 3);
             this.grpSteps.Name = "grpSteps";
             this.grpSteps.Padding = new System.Windows.Forms.Padding(10);
-            this.grpSteps.Size = new System.Drawing.Size(753, 631);
+            this.grpSteps.Size = new System.Drawing.Size(753, 500);
             this.grpSteps.TabIndex = 0;
             this.grpSteps.TabStop = false;
             this.grpSteps.Text = "Test Adımları";
@@ -235,7 +236,7 @@ namespace BaylanModemTest
             this.stepsLayout.Controls.Add(this.lblStep7Name, 1, 4);
             this.stepsLayout.Controls.Add(this.lblStep7Status, 2, 4);
             this.stepsLayout.Dock = System.Windows.Forms.DockStyle.Top;
-            this.stepsLayout.Location = new System.Drawing.Point(10, 32);
+            this.stepsLayout.Location = new System.Drawing.Point(10, 34);
             this.stepsLayout.Name = "stepsLayout";
             this.stepsLayout.RowCount = 5;
             this.stepsLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 90F));
@@ -251,10 +252,10 @@ namespace BaylanModemTest
             this.pnlStep1Led.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.pnlStep1Led.BackColor = System.Drawing.Color.DimGray;
             this.pnlStep1Led.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.pnlStep1Led.Location = new System.Drawing.Point(3, 19);
+            this.pnlStep1Led.Location = new System.Drawing.Point(3, 10);
             this.pnlStep1Led.Margin = new System.Windows.Forms.Padding(3, 10, 3, 10);
             this.pnlStep1Led.Name = "pnlStep1Led";
-            this.pnlStep1Led.Size = new System.Drawing.Size(64, 52);
+            this.pnlStep1Led.Size = new System.Drawing.Size(74, 70);
             this.pnlStep1Led.TabIndex = 0;
             // 
             // lblStep1Name
@@ -286,10 +287,10 @@ namespace BaylanModemTest
             this.pnlStep5Led.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.pnlStep5Led.BackColor = System.Drawing.Color.DimGray;
             this.pnlStep5Led.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.pnlStep5Led.Location = new System.Drawing.Point(3, 109);
+            this.pnlStep5Led.Location = new System.Drawing.Point(3, 100);
             this.pnlStep5Led.Margin = new System.Windows.Forms.Padding(3, 10, 3, 10);
             this.pnlStep5Led.Name = "pnlStep5Led";
-            this.pnlStep5Led.Size = new System.Drawing.Size(64, 52);
+            this.pnlStep5Led.Size = new System.Drawing.Size(74, 70);
             this.pnlStep5Led.TabIndex = 3;
             // 
             // lblStep5Name
@@ -321,10 +322,10 @@ namespace BaylanModemTest
             this.pnlStep3Led.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.pnlStep3Led.BackColor = System.Drawing.Color.DimGray;
             this.pnlStep3Led.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.pnlStep3Led.Location = new System.Drawing.Point(3, 199);
+            this.pnlStep3Led.Location = new System.Drawing.Point(3, 190);
             this.pnlStep3Led.Margin = new System.Windows.Forms.Padding(3, 10, 3, 10);
             this.pnlStep3Led.Name = "pnlStep3Led";
-            this.pnlStep3Led.Size = new System.Drawing.Size(64, 52);
+            this.pnlStep3Led.Size = new System.Drawing.Size(74, 70);
             this.pnlStep3Led.TabIndex = 6;
             // 
             // lblStep3Name
@@ -356,10 +357,10 @@ namespace BaylanModemTest
             this.pnlStep4Led.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.pnlStep4Led.BackColor = System.Drawing.Color.DimGray;
             this.pnlStep4Led.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.pnlStep4Led.Location = new System.Drawing.Point(3, 289);
+            this.pnlStep4Led.Location = new System.Drawing.Point(3, 280);
             this.pnlStep4Led.Margin = new System.Windows.Forms.Padding(3, 10, 3, 10);
             this.pnlStep4Led.Name = "pnlStep4Led";
-            this.pnlStep4Led.Size = new System.Drawing.Size(64, 52);
+            this.pnlStep4Led.Size = new System.Drawing.Size(74, 70);
             this.pnlStep4Led.TabIndex = 9;
             // 
             // lblStep4Name
@@ -391,10 +392,10 @@ namespace BaylanModemTest
             this.pnlStep7Led.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.pnlStep7Led.BackColor = System.Drawing.Color.DimGray;
             this.pnlStep7Led.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.pnlStep7Led.Location = new System.Drawing.Point(3, 379);
+            this.pnlStep7Led.Location = new System.Drawing.Point(3, 370);
             this.pnlStep7Led.Margin = new System.Windows.Forms.Padding(3, 10, 3, 10);
             this.pnlStep7Led.Name = "pnlStep7Led";
-            this.pnlStep7Led.Size = new System.Drawing.Size(64, 52);
+            this.pnlStep7Led.Size = new System.Drawing.Size(74, 70);
             this.pnlStep7Led.TabIndex = 12;
             // 
             // lblStep7Name
@@ -429,7 +430,7 @@ namespace BaylanModemTest
             this.grpLog.Location = new System.Drawing.Point(762, 3);
             this.grpLog.Name = "grpLog";
             this.grpLog.Padding = new System.Windows.Forms.Padding(10);
-            this.grpLog.Size = new System.Drawing.Size(615, 631);
+            this.grpLog.Size = new System.Drawing.Size(615, 500);
             this.grpLog.TabIndex = 1;
             this.grpLog.TabStop = false;
             this.grpLog.Text = "Canlı Log (TX/RX)";
@@ -439,9 +440,9 @@ namespace BaylanModemTest
             this.rtbLog.BackColor = System.Drawing.SystemColors.Control;
             this.rtbLog.Dock = System.Windows.Forms.DockStyle.Fill;
             this.rtbLog.Font = new System.Drawing.Font("Consolas", 12F);
-            this.rtbLog.Location = new System.Drawing.Point(10, 32);
+            this.rtbLog.Location = new System.Drawing.Point(10, 34);
             this.rtbLog.Name = "rtbLog";
-            this.rtbLog.Size = new System.Drawing.Size(595, 589);
+            this.rtbLog.Size = new System.Drawing.Size(595, 456);
             this.rtbLog.TabIndex = 0;
             this.rtbLog.Text = "";
             // 
@@ -450,11 +451,12 @@ namespace BaylanModemTest
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
-            this.ClientSize = new System.Drawing.Size(1400, 850);
+            this.ClientSize = new System.Drawing.Size(1400, 689);
             this.Controls.Add(this.mainLayout);
             this.Controls.Add(this.menuStrip1);
             this.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MainMenuStrip = this.menuStrip1;
             this.Margin = new System.Windows.Forms.Padding(4);
             this.MaximizeBox = false;

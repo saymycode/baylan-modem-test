@@ -22,14 +22,14 @@ namespace BaylanModemTest.Models
         {
             _led.BackColor = Color.Silver;
             _status.Text = "Bekliyor";
-            _status.ForeColor = Color.Silver;
+            _status.ForeColor = Color.Black;
         }
 
         public void SetRunning()
         {
             _led.BackColor = Color.Orange;
             _status.Text = "Çalışıyor";
-            _status.ForeColor = Color.Orange;
+            _status.ForeColor = Color.DarkOrange;
         }
 
         public void SetPass()

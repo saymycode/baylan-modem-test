@@ -31,10 +31,6 @@ namespace BaylanModemTest
             this.cmbDataBits = new System.Windows.Forms.ComboBox();
             this.lblStopBits = new System.Windows.Forms.Label();
             this.cmbStopBits = new System.Windows.Forms.ComboBox();
-            this.lblMeterFlag = new System.Windows.Forms.Label();
-            this.txtMeterFlag = new System.Windows.Forms.TextBox();
-            this.lblMeterBaud = new System.Windows.Forms.Label();
-            this.cmbMeterBaudRate = new System.Windows.Forms.ComboBox();
             this.tcpLayout = new System.Windows.Forms.TableLayoutPanel();
             this.lblTcpIp = new System.Windows.Forms.Label();
             this.txtTcpIp = new System.Windows.Forms.TextBox();
@@ -51,6 +47,10 @@ namespace BaylanModemTest
             this.buttonsPanel = new System.Windows.Forms.FlowLayoutPanel();
             this.btnSave = new System.Windows.Forms.Button();
             this.btnCancel = new System.Windows.Forms.Button();
+            this.label1 = new System.Windows.Forms.Label();
+            this.txtMeterFlag = new System.Windows.Forms.TextBox();
+            this.label2 = new System.Windows.Forms.Label();
+            this.cmbMeterBaudRate = new System.Windows.Forms.ComboBox();
             this.mainLayout.SuspendLayout();
             this.connectionGroup.SuspendLayout();
             this.connectionLayout.SuspendLayout();
@@ -122,10 +122,6 @@ namespace BaylanModemTest
             this.comLayout.Controls.Add(this.cmbDataBits, 1, 3);
             this.comLayout.Controls.Add(this.lblStopBits, 0, 4);
             this.comLayout.Controls.Add(this.cmbStopBits, 1, 4);
-            this.comLayout.Controls.Add(this.lblMeterFlag, 0, 5);
-            this.comLayout.Controls.Add(this.txtMeterFlag, 1, 5);
-            this.comLayout.Controls.Add(this.lblMeterBaud, 0, 6);
-            this.comLayout.Controls.Add(this.cmbMeterBaudRate, 1, 6);
             this.comLayout.Dock = System.Windows.Forms.DockStyle.Fill;
             this.comLayout.Location = new System.Drawing.Point(3, 3);
             this.comLayout.Name = "comLayout";
@@ -245,51 +241,15 @@ namespace BaylanModemTest
             this.cmbStopBits.Size = new System.Drawing.Size(225, 28);
             this.cmbStopBits.TabIndex = 9;
             // 
-            // lblMeterFlag
-            // 
-            this.lblMeterFlag.AutoSize = true;
-            this.lblMeterFlag.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.lblMeterFlag.Location = new System.Drawing.Point(3, 225);
-            this.lblMeterFlag.Name = "lblMeterFlag";
-            this.lblMeterFlag.Size = new System.Drawing.Size(134, 45);
-            this.lblMeterFlag.TabIndex = 10;
-            this.lblMeterFlag.Text = "Sayaç Flag";
-            this.lblMeterFlag.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // txtMeterFlag
-            // 
-            this.txtMeterFlag.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.txtMeterFlag.Location = new System.Drawing.Point(143, 228);
-            this.txtMeterFlag.Name = "txtMeterFlag";
-            this.txtMeterFlag.Size = new System.Drawing.Size(225, 27);
-            this.txtMeterFlag.TabIndex = 11;
-            // 
-            // lblMeterBaud
-            // 
-            this.lblMeterBaud.AutoSize = true;
-            this.lblMeterBaud.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.lblMeterBaud.Location = new System.Drawing.Point(3, 270);
-            this.lblMeterBaud.Name = "lblMeterBaud";
-            this.lblMeterBaud.Size = new System.Drawing.Size(134, 45);
-            this.lblMeterBaud.TabIndex = 12;
-            this.lblMeterBaud.Text = "Sayaç Baud";
-            this.lblMeterBaud.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // cmbMeterBaudRate
-            // 
-            this.cmbMeterBaudRate.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.cmbMeterBaudRate.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cmbMeterBaudRate.FormattingEnabled = true;
-            this.cmbMeterBaudRate.Location = new System.Drawing.Point(143, 273);
-            this.cmbMeterBaudRate.Name = "cmbMeterBaudRate";
-            this.cmbMeterBaudRate.Size = new System.Drawing.Size(225, 28);
-            this.cmbMeterBaudRate.TabIndex = 13;
-            // 
             // tcpLayout
             // 
             this.tcpLayout.ColumnCount = 2;
             this.tcpLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 150F));
             this.tcpLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tcpLayout.Controls.Add(this.label2, 0, 5);
+            this.tcpLayout.Controls.Add(this.cmbMeterBaudRate, 0, 5);
+            this.tcpLayout.Controls.Add(this.label1, 0, 4);
+            this.tcpLayout.Controls.Add(this.txtMeterFlag, 0, 4);
             this.tcpLayout.Controls.Add(this.lblTcpIp, 0, 0);
             this.tcpLayout.Controls.Add(this.txtTcpIp, 1, 0);
             this.tcpLayout.Controls.Add(this.lblPushPort, 0, 1);
@@ -301,11 +261,14 @@ namespace BaylanModemTest
             this.tcpLayout.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tcpLayout.Location = new System.Drawing.Point(380, 3);
             this.tcpLayout.Name = "tcpLayout";
-            this.tcpLayout.RowCount = 4;
-            this.tcpLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 45F));
-            this.tcpLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 45F));
-            this.tcpLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 45F));
-            this.tcpLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 45F));
+            this.tcpLayout.RowCount = 7;
+            this.tcpLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 35F));
+            this.tcpLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 34F));
+            this.tcpLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 36F));
+            this.tcpLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 35F));
+            this.tcpLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 36F));
+            this.tcpLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 37F));
+            this.tcpLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 27F));
             this.tcpLayout.Size = new System.Drawing.Size(371, 348);
             this.tcpLayout.TabIndex = 1;
             // 
@@ -315,9 +278,9 @@ namespace BaylanModemTest
             this.lblTcpIp.Dock = System.Windows.Forms.DockStyle.Fill;
             this.lblTcpIp.Location = new System.Drawing.Point(3, 0);
             this.lblTcpIp.Name = "lblTcpIp";
-            this.lblTcpIp.Size = new System.Drawing.Size(144, 45);
+            this.lblTcpIp.Size = new System.Drawing.Size(144, 35);
             this.lblTcpIp.TabIndex = 0;
-            this.lblTcpIp.Text = "TCP IP";
+            this.lblTcpIp.Text = "SIM IP";
             this.lblTcpIp.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // txtTcpIp
@@ -332,16 +295,16 @@ namespace BaylanModemTest
             // 
             this.lblPushPort.AutoSize = true;
             this.lblPushPort.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.lblPushPort.Location = new System.Drawing.Point(3, 45);
+            this.lblPushPort.Location = new System.Drawing.Point(3, 35);
             this.lblPushPort.Name = "lblPushPort";
-            this.lblPushPort.Size = new System.Drawing.Size(144, 45);
+            this.lblPushPort.Size = new System.Drawing.Size(144, 34);
             this.lblPushPort.TabIndex = 2;
             this.lblPushPort.Text = "Push Port";
             this.lblPushPort.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // numPushPort
             // 
-            this.numPushPort.Location = new System.Drawing.Point(153, 48);
+            this.numPushPort.Location = new System.Drawing.Point(153, 38);
             this.numPushPort.Maximum = new decimal(new int[] {
             65535,
             0,
@@ -365,16 +328,16 @@ namespace BaylanModemTest
             // 
             this.lblPullPort.AutoSize = true;
             this.lblPullPort.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.lblPullPort.Location = new System.Drawing.Point(3, 90);
+            this.lblPullPort.Location = new System.Drawing.Point(3, 69);
             this.lblPullPort.Name = "lblPullPort";
-            this.lblPullPort.Size = new System.Drawing.Size(144, 45);
+            this.lblPullPort.Size = new System.Drawing.Size(144, 36);
             this.lblPullPort.TabIndex = 4;
             this.lblPullPort.Text = "Pull Port";
             this.lblPullPort.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // numPullPort
             // 
-            this.numPullPort.Location = new System.Drawing.Point(153, 93);
+            this.numPullPort.Location = new System.Drawing.Point(153, 72);
             this.numPullPort.Maximum = new decimal(new int[] {
             65535,
             0,
@@ -398,9 +361,9 @@ namespace BaylanModemTest
             // 
             this.lblMeterSerial.AutoSize = true;
             this.lblMeterSerial.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.lblMeterSerial.Location = new System.Drawing.Point(3, 135);
+            this.lblMeterSerial.Location = new System.Drawing.Point(3, 105);
             this.lblMeterSerial.Name = "lblMeterSerial";
-            this.lblMeterSerial.Size = new System.Drawing.Size(144, 45);
+            this.lblMeterSerial.Size = new System.Drawing.Size(144, 35);
             this.lblMeterSerial.TabIndex = 6;
             this.lblMeterSerial.Text = "Sayaç Seri No";
             this.lblMeterSerial.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -408,7 +371,7 @@ namespace BaylanModemTest
             // txtMeterSerial
             // 
             this.txtMeterSerial.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.txtMeterSerial.Location = new System.Drawing.Point(153, 138);
+            this.txtMeterSerial.Location = new System.Drawing.Point(153, 108);
             this.txtMeterSerial.Name = "txtMeterSerial";
             this.txtMeterSerial.Size = new System.Drawing.Size(215, 27);
             this.txtMeterSerial.TabIndex = 7;
@@ -446,7 +409,7 @@ namespace BaylanModemTest
             this.txtFilePath.Dock = System.Windows.Forms.DockStyle.Fill;
             this.txtFilePath.Location = new System.Drawing.Point(123, 3);
             this.txtFilePath.Name = "txtFilePath";
-            this.txtFilePath.Size = new System.Drawing.Size(528, 27);
+            this.txtFilePath.Size = new System.Drawing.Size(528, 23);
             this.txtFilePath.TabIndex = 1;
             // 
             // btnBrowse
@@ -467,15 +430,15 @@ namespace BaylanModemTest
             this.buttonsPanel.Controls.Add(this.btnCancel);
             this.buttonsPanel.Dock = System.Windows.Forms.DockStyle.Right;
             this.buttonsPanel.FlowDirection = System.Windows.Forms.FlowDirection.RightToLeft;
-            this.buttonsPanel.Location = new System.Drawing.Point(468, 483);
+            this.buttonsPanel.Location = new System.Drawing.Point(615, 483);
             this.buttonsPanel.Name = "buttonsPanel";
             this.buttonsPanel.Padding = new System.Windows.Forms.Padding(0, 5, 0, 0);
-            this.buttonsPanel.Size = new System.Drawing.Size(309, 44);
+            this.buttonsPanel.Size = new System.Drawing.Size(162, 44);
             this.buttonsPanel.TabIndex = 2;
             // 
             // btnSave
             // 
-            this.btnSave.Location = new System.Drawing.Point(231, 8);
+            this.btnSave.Location = new System.Drawing.Point(84, 8);
             this.btnSave.Name = "btnSave";
             this.btnSave.Size = new System.Drawing.Size(75, 30);
             this.btnSave.TabIndex = 0;
@@ -485,13 +448,53 @@ namespace BaylanModemTest
             // 
             // btnCancel
             // 
-            this.btnCancel.Location = new System.Drawing.Point(150, 8);
+            this.btnCancel.Location = new System.Drawing.Point(3, 8);
             this.btnCancel.Name = "btnCancel";
             this.btnCancel.Size = new System.Drawing.Size(75, 30);
             this.btnCancel.TabIndex = 1;
             this.btnCancel.Text = "İptal";
             this.btnCancel.UseVisualStyleBackColor = true;
             this.btnCancel.Click += new System.EventHandler(this.btnCancel_Click);
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.label1.Location = new System.Drawing.Point(3, 140);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(144, 36);
+            this.label1.TabIndex = 12;
+            this.label1.Text = "Sayaç Flag";
+            this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // txtMeterFlag
+            // 
+            this.txtMeterFlag.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.txtMeterFlag.Location = new System.Drawing.Point(153, 143);
+            this.txtMeterFlag.Name = "txtMeterFlag";
+            this.txtMeterFlag.Size = new System.Drawing.Size(215, 27);
+            this.txtMeterFlag.TabIndex = 13;
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.label2.Location = new System.Drawing.Point(3, 176);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(144, 37);
+            this.label2.TabIndex = 14;
+            this.label2.Text = "Sayaç Baud";
+            this.label2.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // cmbMeterBaudRate
+            // 
+            this.cmbMeterBaudRate.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.cmbMeterBaudRate.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbMeterBaudRate.FormattingEnabled = true;
+            this.cmbMeterBaudRate.Location = new System.Drawing.Point(153, 179);
+            this.cmbMeterBaudRate.Name = "cmbMeterBaudRate";
+            this.cmbMeterBaudRate.Size = new System.Drawing.Size(215, 28);
+            this.cmbMeterBaudRate.TabIndex = 15;
             // 
             // FrmSettings
             // 
@@ -540,10 +543,6 @@ namespace BaylanModemTest
         private System.Windows.Forms.ComboBox cmbDataBits;
         private System.Windows.Forms.Label lblStopBits;
         private System.Windows.Forms.ComboBox cmbStopBits;
-        private System.Windows.Forms.Label lblMeterFlag;
-        private System.Windows.Forms.TextBox txtMeterFlag;
-        private System.Windows.Forms.Label lblMeterBaud;
-        private System.Windows.Forms.ComboBox cmbMeterBaudRate;
         private System.Windows.Forms.TableLayoutPanel tcpLayout;
         private System.Windows.Forms.Label lblTcpIp;
         private System.Windows.Forms.TextBox txtTcpIp;
@@ -560,5 +559,9 @@ namespace BaylanModemTest
         private System.Windows.Forms.FlowLayoutPanel buttonsPanel;
         private System.Windows.Forms.Button btnSave;
         private System.Windows.Forms.Button btnCancel;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.ComboBox cmbMeterBaudRate;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.TextBox txtMeterFlag;
     }
 }
