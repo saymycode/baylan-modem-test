@@ -249,7 +249,7 @@ namespace BaylanModemTest
                     BuildMeterReadCommand(meterSerialToRead),
                     new StepExpectation(meterSerialToRead, new Dictionary<string, string>
                     {
-                        {"MSGNF", "METER_OBIS_OR_OBIS_PACKAGE_READ"}
+                        {"<1F>#<1E>#<1F>MSGNF", "METER_OBIS_OR_OBIS_PACKAGE_READ"}
                     }),
                     useTcp: true
                 )
@@ -261,11 +261,8 @@ namespace BaylanModemTest
             return new List<StepCommandPlanItem>
             {
                 new StepCommandPlanItem(
-                    "AT+FIN\r\n",
-                    new StepExpectation("FINOK", new Dictionary<string, string>
-                    {
-                        {"STATUS", "OK"}
-                    })
+                    "QCK_FORMAT_OSOS",
+                    new StepExpectation("FREE SPACE")
                 )
             };
         }
@@ -672,8 +669,8 @@ namespace BaylanModemTest
             var buffer = Encoding.ASCII.GetBytes(cmd);
             var txHex = BitConverter.ToString(buffer).Replace("-", " ");
             LogTx($"TX HEX: {txHex}");
+            await Task.Delay(TimeSpan.FromSeconds(15), ct);
             await _tcpPush.GetStream().WriteAsync(buffer, 0, buffer.Length, ct);
-
             return await WaitForExpectedTcpResponseAsync(ct);
         }
 
